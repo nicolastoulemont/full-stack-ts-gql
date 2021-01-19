@@ -1,6 +1,9 @@
 overwrite: true
-schema: "http://localhost:3000/api/graphql"
+# schema: "http://localhost:3000/api/graphql"
+schema: "src/schema.graphql"
 documents: "graphql/**/*.ts"
+watch:
+  - "graphql/**/*.ts"
 generates:
   gql-gen/index.tsx:
     plugins:

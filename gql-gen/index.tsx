@@ -19,26 +19,6 @@ export type Error = {
   message?: Maybe<Scalars['String']>;
 };
 
-export type User = {
-  __typename?: 'User';
-  id?: Maybe<Scalars['ID']>;
-  username?: Maybe<Scalars['String']>;
-  email?: Maybe<Scalars['String']>;
-  verified?: Maybe<Scalars['Boolean']>;
-};
-
-export type UserResponse = {
-  __typename?: 'UserResponse';
-  user?: Maybe<User>;
-  errors?: Maybe<Array<Maybe<Error>>>;
-};
-
-export type UsersResponse = {
-  __typename?: 'UsersResponse';
-  users?: Maybe<Array<Maybe<User>>>;
-  errors?: Maybe<Array<Maybe<Error>>>;
-};
-
 export type Query = {
   __typename?: 'Query';
   userById?: Maybe<UserResponse>;
@@ -48,6 +28,26 @@ export type Query = {
 
 export type QueryUserByIdArgs = {
   id: Scalars['ID'];
+};
+
+export type User = {
+  __typename?: 'User';
+  email?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['ID']>;
+  username?: Maybe<Scalars['String']>;
+  verified?: Maybe<Scalars['Boolean']>;
+};
+
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  errors?: Maybe<Array<Maybe<Error>>>;
+  user?: Maybe<User>;
+};
+
+export type UsersResponse = {
+  __typename?: 'UsersResponse';
+  errors?: Maybe<Array<Maybe<Error>>>;
+  users?: Maybe<Array<Maybe<User>>>;
 };
 
 export type UserByIdQueryVariables = Exact<{
