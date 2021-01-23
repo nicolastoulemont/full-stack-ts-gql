@@ -7,11 +7,17 @@ export default function Home() {
 	return (
 		<>
 			<Head>
-				<title>Create Next App</title>
+				<title>Awesome custom hooks</title>
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
 
-			<main>{JSON.stringify(data?.users?.users)}</main>
+			<main>
+				{data?.users?.users?.map((user) => (
+					<div key={user.id}>
+						{user.username} - {user.email}{' '}
+					</div>
+				))}
+			</main>
 		</>
 	)
 }
