@@ -50,7 +50,7 @@ export const userById = queryField('userById', {
 		if (!user) {
 			return {
 				errors: [
-					{ key: 'not_found', message: `No user matching the id: ${args.id} was found` }
+					{ key: 'notFound', message: `No user matching the id: ${args.id} was found` }
 				]
 			}
 		}
