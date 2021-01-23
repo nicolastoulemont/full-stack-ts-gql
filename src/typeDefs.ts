@@ -46,16 +46,16 @@ export const userById = queryField('userById', {
 		id: nonNull(idArg())
 	},
 	async resolve(_, args) {
-		try {
-			const user = data.find((user) => user.id === args.id)
-			return { user }
-		} catch (err) {
+		const user = data.find((user) => user.id === args.id)
+		if (!user) {
 			return {
 				errors: [
 					{ key: 'not_found', message: `No user matching the id: ${args.id} was found` }
 				]
 			}
 		}
+
+		return { user }
 	}
 })
 
