@@ -2,8 +2,14 @@
 ### Do not make changes to this file directly
 
 
+type Error {
+  code: String
+  key: String
+  message: String
+}
+
 type Mutation {
-  createUser(email: String!, id: String!, username: String!, verified: Boolean! = false): [User]
+  createUser(email: String!, id: String!, username: String!, verified: Boolean! = false): UserResult
 }
 
 type Query {
@@ -17,3 +23,6 @@ type User {
   username: String
   verified: Boolean
 }
+
+"""User or Error"""
+union UserResult = Error | User

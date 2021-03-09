@@ -23,15 +23,15 @@ export default function Home() {
 
 	async function handleClick() {
 		const { data } = await saveUser({
-			update(cache, { data: { createUser } }) {
+			update: (cache, { data: { createUser } }) => {
 				cache.modify({
 					fields: {
-						users: () => [...createUser]
+						users: (users) => ('id' in createUser ? [...users, createUser] : [...users])
 					}
 				})
 			}
 		})
-		if (data?.createUser.length) {
+		if ('id' in data.createUser) {
 			setState(initialState)
 		}
 	}

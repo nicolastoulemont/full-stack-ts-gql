@@ -28,6 +28,11 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  Error: { // root type
+    code?: string | null; // String
+    key?: string | null; // String
+    message?: string | null; // String
+  }
   Mutation: {};
   Query: {};
   User: { // root type
@@ -42,15 +47,21 @@ export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
+  UserResult: NexusGenRootTypes['Error'] | NexusGenRootTypes['User'];
 }
 
-export type NexusGenRootTypes = NexusGenObjects
+export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
 
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
+  Error: { // field return type
+    code: string | null; // String
+    key: string | null; // String
+    message: string | null; // String
+  }
   Mutation: { // field return type
-    createUser: Array<NexusGenRootTypes['User'] | null> | null; // [User]
+    createUser: NexusGenRootTypes['UserResult'] | null; // UserResult
   }
   Query: { // field return type
     userById: NexusGenRootTypes['User'] | null; // User
@@ -65,8 +76,13 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  Error: { // field return type name
+    code: 'String'
+    key: 'String'
+    message: 'String'
+  }
   Mutation: { // field return type name
-    createUser: 'User'
+    createUser: 'UserResult'
   }
   Query: { // field return type name
     userById: 'User'
@@ -97,6 +113,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  UserResult: "Error" | "User"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -112,17 +129,17 @@ export type NexusGenInterfaceNames = never;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
-export type NexusGenUnionNames = never;
+export type NexusGenUnionNames = keyof NexusGenUnions;
 
-export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
+export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = "Error" | "User";
 
 export type NexusGenAbstractsUsingStrategyResolveType = never;
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
-    isTypeOf: false
-    resolveType: true
+    isTypeOf: true
     __typename: false
+    resolveType: false
   }
 }
 

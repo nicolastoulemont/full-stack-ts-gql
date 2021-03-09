@@ -13,9 +13,16 @@ export type Scalars = {
   Float: number;
 };
 
+export type Error = {
+  __typename?: 'Error';
+  code?: Maybe<Scalars['String']>;
+  key?: Maybe<Scalars['String']>;
+  message?: Maybe<Scalars['String']>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  createUser?: Maybe<Array<Maybe<User>>>;
+  createUser?: Maybe<UserResult>;
 };
 
 
@@ -45,6 +52,9 @@ export type User = {
   verified?: Maybe<Scalars['Boolean']>;
 };
 
+/** User or Error */
+export type UserResult = Error | User;
+
 export type CreateUserMutationVariables = Exact<{
   id: Scalars['String'];
   username: Scalars['String'];
@@ -55,10 +65,13 @@ export type CreateUserMutationVariables = Exact<{
 
 export type CreateUserMutation = (
   { __typename?: 'Mutation' }
-  & { createUser?: Maybe<Array<Maybe<(
+  & { createUser?: Maybe<(
+    { __typename?: 'Error' }
+    & Pick<Error, 'code' | 'key' | 'message'>
+  ) | (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'email' | 'verified'>
-  )>>> }
+  )> }
 );
 
 export type UserByIdQueryVariables = Exact<{
@@ -89,10 +102,17 @@ export type UsersQuery = (
 export const CreateUserDocument = gql`
     mutation CreateUser($id: String!, $username: String!, $email: String!, $verified: Boolean!) {
   createUser(id: $id, username: $username, email: $email, verified: $verified) {
-    id
-    username
-    email
-    verified
+    ... on User {
+      id
+      username
+      email
+      verified
+    }
+    ... on Error {
+      code
+      key
+      message
+    }
   }
 }
     `;
