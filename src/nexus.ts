@@ -28,24 +28,13 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  Error: { // root type
-    key?: string | null; // String
-    message?: string | null; // String
-  }
+  Mutation: {};
   Query: {};
   User: { // root type
     email?: string | null; // String
     id?: string | null; // ID
     username?: string | null; // String
     verified?: boolean | null; // Boolean
-  }
-  UserResponse: { // root type
-    errors?: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
-    user?: NexusGenRootTypes['User'] | null; // User
-  }
-  UsersResponse: { // root type
-    errors?: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
-    users?: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
 }
 
@@ -60,13 +49,12 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
 
 export interface NexusGenFieldTypes {
-  Error: { // field return type
-    key: string | null; // String
-    message: string | null; // String
+  Mutation: { // field return type
+    createUser: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   Query: { // field return type
-    userById: NexusGenRootTypes['UserResponse'] | null; // UserResponse
-    users: NexusGenRootTypes['UsersResponse'] | null; // UsersResponse
+    userById: NexusGenRootTypes['User'] | null; // User
+    users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
   }
   User: { // field return type
     email: string | null; // String
@@ -74,24 +62,15 @@ export interface NexusGenFieldTypes {
     username: string | null; // String
     verified: boolean | null; // Boolean
   }
-  UserResponse: { // field return type
-    errors: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
-    user: NexusGenRootTypes['User'] | null; // User
-  }
-  UsersResponse: { // field return type
-    errors: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
-    users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
-  }
 }
 
 export interface NexusGenFieldTypeNames {
-  Error: { // field return type name
-    key: 'String'
-    message: 'String'
+  Mutation: { // field return type name
+    createUser: 'User'
   }
   Query: { // field return type name
-    userById: 'UserResponse'
-    users: 'UsersResponse'
+    userById: 'User'
+    users: 'User'
   }
   User: { // field return type name
     email: 'String'
@@ -99,17 +78,17 @@ export interface NexusGenFieldTypeNames {
     username: 'String'
     verified: 'Boolean'
   }
-  UserResponse: { // field return type name
-    errors: 'Error'
-    user: 'User'
-  }
-  UsersResponse: { // field return type name
-    errors: 'Error'
-    users: 'User'
-  }
 }
 
 export interface NexusGenArgTypes {
+  Mutation: {
+    createUser: { // args
+      email: string; // String!
+      id: string; // String!
+      username: string; // String!
+      verified: boolean; // Boolean!
+    }
+  }
   Query: {
     userById: { // args
       id: string; // ID!

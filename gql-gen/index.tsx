@@ -13,16 +13,23 @@ export type Scalars = {
   Float: number;
 };
 
-export type Error = {
-  __typename?: 'Error';
-  key?: Maybe<Scalars['String']>;
-  message?: Maybe<Scalars['String']>;
+export type Mutation = {
+  __typename?: 'Mutation';
+  createUser?: Maybe<Array<Maybe<User>>>;
+};
+
+
+export type MutationCreateUserArgs = {
+  email: Scalars['String'];
+  id: Scalars['String'];
+  username: Scalars['String'];
+  verified?: Scalars['Boolean'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  userById?: Maybe<UserResponse>;
-  users?: Maybe<UsersResponse>;
+  userById?: Maybe<User>;
+  users?: Maybe<Array<Maybe<User>>>;
 };
 
 
@@ -38,17 +45,21 @@ export type User = {
   verified?: Maybe<Scalars['Boolean']>;
 };
 
-export type UserResponse = {
-  __typename?: 'UserResponse';
-  errors?: Maybe<Array<Maybe<Error>>>;
-  user?: Maybe<User>;
-};
+export type CreateUserMutationVariables = Exact<{
+  id: Scalars['String'];
+  username: Scalars['String'];
+  email: Scalars['String'];
+  verified: Scalars['Boolean'];
+}>;
 
-export type UsersResponse = {
-  __typename?: 'UsersResponse';
-  errors?: Maybe<Array<Maybe<Error>>>;
-  users?: Maybe<Array<Maybe<User>>>;
-};
+
+export type CreateUserMutation = (
+  { __typename?: 'Mutation' }
+  & { createUser?: Maybe<Array<Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'email' | 'verified'>
+  )>>> }
+);
 
 export type UserByIdQueryVariables = Exact<{
   id: Scalars['ID'];
@@ -58,14 +69,8 @@ export type UserByIdQueryVariables = Exact<{
 export type UserByIdQuery = (
   { __typename?: 'Query' }
   & { userById?: Maybe<(
-    { __typename?: 'UserResponse' }
-    & { errors?: Maybe<Array<Maybe<(
-      { __typename?: 'Error' }
-      & Pick<Error, 'key' | 'message'>
-    )>>>, user?: Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username' | 'email'>
-    )> }
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'email' | 'verified'>
   )> }
 );
 
@@ -74,31 +79,58 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type UsersQuery = (
   { __typename?: 'Query' }
-  & { users?: Maybe<(
-    { __typename?: 'UsersResponse' }
-    & { errors?: Maybe<Array<Maybe<(
-      { __typename?: 'Error' }
-      & Pick<Error, 'key' | 'message'>
-    )>>>, users?: Maybe<Array<Maybe<(
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username' | 'email'>
-    )>>> }
-  )> }
+  & { users?: Maybe<Array<Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'email' | 'verified'>
+  )>>> }
 );
 
 
+export const CreateUserDocument = gql`
+    mutation CreateUser($id: String!, $username: String!, $email: String!, $verified: Boolean!) {
+  createUser(id: $id, username: $username, email: $email, verified: $verified) {
+    id
+    username
+    email
+    verified
+  }
+}
+    `;
+export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, CreateUserMutationVariables>;
+
+/**
+ * __useCreateUserMutation__
+ *
+ * To run a mutation, you first call `useCreateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createUserMutation, { data, loading, error }] = useCreateUserMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      username: // value for 'username'
+ *      email: // value for 'email'
+ *      verified: // value for 'verified'
+ *   },
+ * });
+ */
+export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
+        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, baseOptions);
+      }
+export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
+export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
+export type CreateUserMutationOptions = Apollo.BaseMutationOptions<CreateUserMutation, CreateUserMutationVariables>;
 export const UserByIdDocument = gql`
     query UserById($id: ID!) {
   userById(id: $id) {
-    errors {
-      key
-      message
-    }
-    user {
-      id
-      username
-      email
-    }
+    id
+    username
+    email
+    verified
   }
 }
     `;
@@ -131,15 +163,10 @@ export type UserByIdQueryResult = Apollo.QueryResult<UserByIdQuery, UserByIdQuer
 export const UsersDocument = gql`
     query Users {
   users {
-    errors {
-      key
-      message
-    }
-    users {
-      id
-      username
-      email
-    }
+    id
+    username
+    email
+    verified
   }
 }
     `;

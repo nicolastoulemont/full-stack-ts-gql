@@ -2,14 +2,13 @@
 ### Do not make changes to this file directly
 
 
-type Error {
-  key: String
-  message: String
+type Mutation {
+  createUser(email: String!, id: String!, username: String!, verified: Boolean! = false): [User]
 }
 
 type Query {
-  userById(id: ID!): UserResponse
-  users: UsersResponse
+  userById(id: ID!): User
+  users: [User]
 }
 
 type User {
@@ -17,14 +16,4 @@ type User {
   id: ID
   username: String
   verified: Boolean
-}
-
-type UserResponse {
-  errors: [Error]
-  user: User
-}
-
-type UsersResponse {
-  errors: [Error]
-  users: [User]
 }
