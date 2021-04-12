@@ -11,4 +11,5 @@ generates:
       - "typescript-operations"
       - "typescript-react-apollo"
     config:
+      nonOptionalTypename: true
       withHooks: true

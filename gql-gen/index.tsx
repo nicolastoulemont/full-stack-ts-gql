@@ -14,14 +14,14 @@ export type Scalars = {
 };
 
 export type Error = {
-  __typename?: 'Error';
+  __typename: 'Error';
   code?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
   message?: Maybe<Scalars['String']>;
 };
 
 export type Mutation = {
-  __typename?: 'Mutation';
+  __typename: 'Mutation';
   createUser?: Maybe<UserResult>;
 };
 
@@ -34,7 +34,7 @@ export type MutationCreateUserArgs = {
 };
 
 export type Query = {
-  __typename?: 'Query';
+  __typename: 'Query';
   userById?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
 };
@@ -45,7 +45,7 @@ export type QueryUserByIdArgs = {
 };
 
 export type User = {
-  __typename?: 'User';
+  __typename: 'User';
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['ID']>;
   username?: Maybe<Scalars['String']>;
@@ -64,12 +64,12 @@ export type CreateUserMutationVariables = Exact<{
 
 
 export type CreateUserMutation = (
-  { __typename?: 'Mutation' }
+  { __typename: 'Mutation' }
   & { createUser?: Maybe<(
-    { __typename?: 'Error' }
+    { __typename: 'Error' }
     & Pick<Error, 'code' | 'key' | 'message'>
   ) | (
-    { __typename?: 'User' }
+    { __typename: 'User' }
     & Pick<User, 'id' | 'username' | 'email' | 'verified'>
   )> }
 );
@@ -80,9 +80,9 @@ export type UserByIdQueryVariables = Exact<{
 
 
 export type UserByIdQuery = (
-  { __typename?: 'Query' }
+  { __typename: 'Query' }
   & { userById?: Maybe<(
-    { __typename?: 'User' }
+    { __typename: 'User' }
     & Pick<User, 'id' | 'username' | 'email' | 'verified'>
   )> }
 );
@@ -91,9 +91,9 @@ export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type UsersQuery = (
-  { __typename?: 'Query' }
+  { __typename: 'Query' }
   & { users?: Maybe<Array<Maybe<(
-    { __typename?: 'User' }
+    { __typename: 'User' }
     & Pick<User, 'id' | 'username' | 'email' | 'verified'>
   )>>> }
 );

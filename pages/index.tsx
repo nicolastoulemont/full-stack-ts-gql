@@ -1,6 +1,7 @@
 import { useCreateUserMutation, useUsersQuery } from 'gql-gen'
 import Head from 'next/head'
 import { useState } from 'react'
+import { isType } from 'utils'
 
 const initialState = {
 	id: '',
@@ -11,6 +12,7 @@ const initialState = {
 
 export default function Home() {
 	const [state, setState] = useState(initialState)
+	const [error, setError] = useState({})
 	const { data } = useUsersQuery()
 	const [saveUser] = useCreateUserMutation({
 		variables: {
@@ -26,13 +28,17 @@ export default function Home() {
 			update: (cache, { data: { createUser } }) => {
 				cache.modify({
 					fields: {
-						users: (users) => ('id' in createUser ? [...users, createUser] : [...users])
+						users: (users) =>
+							isType(data?.createUser, 'User') ? [...users, createUser] : [...users]
 					}
 				})
 			}
 		})
-		if ('id' in data.createUser) {
+		if (isType(data?.createUser, 'User')) {
 			setState(initialState)
+			setError({})
+		} else {
+			setError(data?.createUser)
 		}
 	}
 
@@ -51,14 +57,18 @@ export default function Home() {
 					width: '100%'
 				}}
 			>
-				<ul>
-					{data?.users?.map((user) => (
-						<li key={user.id}>
-							{user.username} - {user.email} -{' '}
-							{user.verified ? 'Verified' : 'Not verified'}
-						</li>
-					))}
-				</ul>
+				<div>
+					<ul>
+						{data?.users?.map((user) => (
+							<li key={user.id}>
+								{user.username} - {user.email} -{' '}
+								{user.verified ? 'Verified' : 'Not verified'}
+							</li>
+						))}
+					</ul>
+					{Object.keys(error).length > 0 ? JSON.stringify(error, null, 2) : null}
+				</div>
+
 				<div
 					style={{
 						display: 'flex',
