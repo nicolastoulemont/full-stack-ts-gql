@@ -2,27 +2,93 @@
 ### Do not make changes to this file directly
 
 
+type ActiveUser implements User {
+  email: String
+  id: Int
+  name: String
+  status: UserStatus
+}
+
+type BannedUser implements User {
+  banReason: String
+  id: Int
+  name: String
+  status: UserStatus
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type DeletedUser implements User {
+  deletedAt: DateTime
+  id: Int
+  name: String
+  status: UserStatus
+}
+
 type Error {
-  code: String
   key: String
   message: String
 }
 
+"""The differents error codes the api will return if needed"""
+enum ErrorCode {
+  BAD_REQUEST
+  UNAUTHORIZED
+}
+
+"""The differents error message the api will return if needed"""
+enum ErrorMessage {
+  UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR
+  UNAUTHENTICATED_PLEASE_LOGIN
+}
+
+type InvalidArgumentsError {
+  code: ErrorCode
+  invalidArguments: [Error]
+  message: ErrorMessage
+}
+
 type Mutation {
-  createUser(email: String!, id: String!, username: String!, verified: Boolean! = false): UserResult
+  changeUserStatus(id: Int!, status: UserStatus!): UserResult
+  createPost(authorEmail: String, content: String, title: String!): Post
+  createUser(email: String!, name: String!): UserResult
+}
+
+type Post {
+  author: User
+  content: String
+  createdAt: DateTime
+  id: Int
+  published: Boolean
+  title: String
+  updatedAt: DateTime
 }
 
 type Query {
-  userById(id: ID!): User
-  users: [User]
+  userById(id: ID!): UserResult
+  users: [UserResult]
 }
 
-type User {
-  email: String
-  id: ID
-  username: String
-  verified: Boolean
+interface User {
+  id: Int
+  name: String
+  status: UserStatus
 }
 
-"""User or Error"""
-union UserResult = Error | User
+type UserAuthenticationError {
+  code: ErrorCode
+  message: ErrorMessage
+}
+
+"""Return a user or user related errors"""
+union UserResult = ActiveUser | BannedUser | DeletedUser | InvalidArgumentsError | UserAuthenticationError
+
+"""User account status"""
+enum UserStatus {
+  ACTIVE
+  BANNED
+  DELETED
+}
