@@ -45,7 +45,7 @@ export default function Home() {
 	return (
 		<>
 			<Head>
-				<title>Awesome custom hooks</title>
+				<title>200 Error handling with Union Types and Plugins</title>
 				<link rel='icon' href='/favicon.ico' />
 			</Head>
 
@@ -57,7 +57,7 @@ export default function Home() {
 					width: '100%'
 				}}
 			>
-				<div>
+				<div style={{ maxWidth: '500px' }}>
 					<ul>
 						{data?.users?.map((user) => (
 							<li key={user.id}>
@@ -66,7 +66,9 @@ export default function Home() {
 							</li>
 						))}
 					</ul>
-					{Object.keys(error).length > 0 ? JSON.stringify(error, null, 2) : null}
+					{Object.keys(error).length > 0 ? (
+						<pre>{JSON.stringify(error, null, 2)}</pre>
+					) : null}
 				</div>
 
 				<div

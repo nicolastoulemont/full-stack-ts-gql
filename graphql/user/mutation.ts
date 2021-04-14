@@ -9,10 +9,17 @@ export const CREATE_USER = gql`
 				email
 				verified
 			}
-			... on Error {
+			... on UserAuthenticationError {
 				code
-				key
 				message
+			}
+			... on InvalidArgumentsError {
+				code
+				message
+				invalidArguments {
+					key
+					message
+				}
 			}
 		}
 	}

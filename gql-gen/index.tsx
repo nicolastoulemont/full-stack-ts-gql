@@ -4,6 +4,7 @@ export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -15,9 +16,27 @@ export type Scalars = {
 
 export type Error = {
   __typename: 'Error';
-  code?: Maybe<Scalars['String']>;
   key?: Maybe<Scalars['String']>;
   message?: Maybe<Scalars['String']>;
+};
+
+/** The differents error codes the api will return if needed */
+export enum ErrorCode {
+  BadRequest = 'BAD_REQUEST',
+  Unauthorized = 'UNAUTHORIZED'
+}
+
+/** The differents error message the api will return if needed */
+export enum ErrorMessage {
+  UnableToProcessRequestDueToClientError = 'UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR',
+  UnauthenticatedPleaseLogin = 'UNAUTHENTICATED_PLEASE_LOGIN'
+}
+
+export type InvalidArgumentsError = {
+  __typename: 'InvalidArgumentsError';
+  code?: Maybe<ErrorCode>;
+  invalidArguments?: Maybe<Array<Maybe<Error>>>;
+  message?: Maybe<ErrorMessage>;
 };
 
 export type Mutation = {
@@ -52,8 +71,14 @@ export type User = {
   verified?: Maybe<Scalars['Boolean']>;
 };
 
-/** User or Error */
-export type UserResult = Error | User;
+export type UserAuthenticationError = {
+  __typename: 'UserAuthenticationError';
+  code?: Maybe<ErrorCode>;
+  message?: Maybe<ErrorMessage>;
+};
+
+/** Return a user or user related errors */
+export type UserResult = InvalidArgumentsError | User | UserAuthenticationError;
 
 export type CreateUserMutationVariables = Exact<{
   id: Scalars['String'];
@@ -66,11 +91,18 @@ export type CreateUserMutationVariables = Exact<{
 export type CreateUserMutation = (
   { __typename: 'Mutation' }
   & { createUser?: Maybe<(
-    { __typename: 'Error' }
-    & Pick<Error, 'code' | 'key' | 'message'>
+    { __typename: 'InvalidArgumentsError' }
+    & Pick<InvalidArgumentsError, 'code' | 'message'>
+    & { invalidArguments?: Maybe<Array<Maybe<(
+      { __typename: 'Error' }
+      & Pick<Error, 'key' | 'message'>
+    )>>> }
   ) | (
     { __typename: 'User' }
     & Pick<User, 'id' | 'username' | 'email' | 'verified'>
+  ) | (
+    { __typename: 'UserAuthenticationError' }
+    & Pick<UserAuthenticationError, 'code' | 'message'>
   )> }
 );
 
@@ -108,10 +140,17 @@ export const CreateUserDocument = gql`
       email
       verified
     }
-    ... on Error {
+    ... on UserAuthenticationError {
       code
-      key
       message
+    }
+    ... on InvalidArgumentsError {
+      code
+      message
+      invalidArguments {
+        key
+        message
+      }
     }
   }
 }
@@ -139,7 +178,8 @@ export type CreateUserMutationFn = Apollo.MutationFunction<CreateUserMutation, C
  * });
  */
 export function useCreateUserMutation(baseOptions?: Apollo.MutationHookOptions<CreateUserMutation, CreateUserMutationVariables>) {
-        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument, options);
       }
 export type CreateUserMutationHookResult = ReturnType<typeof useCreateUserMutation>;
 export type CreateUserMutationResult = Apollo.MutationResult<CreateUserMutation>;
@@ -172,10 +212,12 @@ export const UserByIdDocument = gql`
  * });
  */
 export function useUserByIdQuery(baseOptions: Apollo.QueryHookOptions<UserByIdQuery, UserByIdQueryVariables>) {
-        return Apollo.useQuery<UserByIdQuery, UserByIdQueryVariables>(UserByIdDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UserByIdQuery, UserByIdQueryVariables>(UserByIdDocument, options);
       }
 export function useUserByIdLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UserByIdQuery, UserByIdQueryVariables>) {
-          return Apollo.useLazyQuery<UserByIdQuery, UserByIdQueryVariables>(UserByIdDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UserByIdQuery, UserByIdQueryVariables>(UserByIdDocument, options);
         }
 export type UserByIdQueryHookResult = ReturnType<typeof useUserByIdQuery>;
 export type UserByIdLazyQueryHookResult = ReturnType<typeof useUserByIdLazyQuery>;
@@ -207,10 +249,12 @@ export const UsersDocument = gql`
  * });
  */
 export function useUsersQuery(baseOptions?: Apollo.QueryHookOptions<UsersQuery, UsersQueryVariables>) {
-        return Apollo.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, baseOptions);
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
       }
 export function useUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<UsersQuery, UsersQueryVariables>) {
-          return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, baseOptions);
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<UsersQuery, UsersQueryVariables>(UsersDocument, options);
         }
 export type UsersQueryHookResult = ReturnType<typeof useUsersQuery>;
 export type UsersLazyQueryHookResult = ReturnType<typeof useUsersLazyQuery>;

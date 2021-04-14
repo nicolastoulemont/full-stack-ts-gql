@@ -3,9 +3,26 @@
 
 
 type Error {
-  code: String
   key: String
   message: String
+}
+
+"""The differents error codes the api will return if needed"""
+enum ErrorCode {
+  BAD_REQUEST
+  UNAUTHORIZED
+}
+
+"""The differents error message the api will return if needed"""
+enum ErrorMessage {
+  UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR
+  UNAUTHENTICATED_PLEASE_LOGIN
+}
+
+type InvalidArgumentsError {
+  code: ErrorCode
+  invalidArguments: [Error]
+  message: ErrorMessage
 }
 
 type Mutation {
@@ -24,5 +41,10 @@ type User {
   verified: Boolean
 }
 
-"""User or Error"""
-union UserResult = Error | User
+type UserAuthenticationError {
+  code: ErrorCode
+  message: ErrorMessage
+}
+
+"""Return a user or user related errors"""
+union UserResult = InvalidArgumentsError | User | UserAuthenticationError

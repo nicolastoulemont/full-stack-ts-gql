@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "concurrently \"next\" \"yarn gen\" ",
+		"dev": "concurrently \"next\" \"npm run gen\" ",
 		"build": "next build",
 		"start": "next start",
 		"gen": "graphql-codegen --config codegen.yml"

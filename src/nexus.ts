@@ -17,6 +17,8 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  ErrorCode: "BAD_REQUEST" | "UNAUTHORIZED"
+  ErrorMessage: "UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR" | "UNAUTHENTICATED_PLEASE_LOGIN"
 }
 
 export interface NexusGenScalars {
@@ -29,9 +31,11 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   Error: { // root type
-    code?: string | null; // String
     key?: string | null; // String
     message?: string | null; // String
+  }
+  InvalidArgumentsError: { // root type
+    invalidArguments?: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
   }
   Mutation: {};
   Query: {};
@@ -41,24 +45,29 @@ export interface NexusGenObjects {
     username?: string | null; // String
     verified?: boolean | null; // Boolean
   }
+  UserAuthenticationError: {};
 }
 
 export interface NexusGenInterfaces {
 }
 
 export interface NexusGenUnions {
-  UserResult: NexusGenRootTypes['Error'] | NexusGenRootTypes['User'];
+  UserResult: NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['User'] | NexusGenRootTypes['UserAuthenticationError'];
 }
 
 export type NexusGenRootTypes = NexusGenObjects & NexusGenUnions
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
   Error: { // field return type
-    code: string | null; // String
     key: string | null; // String
     message: string | null; // String
+  }
+  InvalidArgumentsError: { // field return type
+    code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
+    invalidArguments: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
+    message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
   }
   Mutation: { // field return type
     createUser: NexusGenRootTypes['UserResult'] | null; // UserResult
@@ -73,13 +82,21 @@ export interface NexusGenFieldTypes {
     username: string | null; // String
     verified: boolean | null; // Boolean
   }
+  UserAuthenticationError: { // field return type
+    code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
+    message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
+  }
 }
 
 export interface NexusGenFieldTypeNames {
   Error: { // field return type name
-    code: 'String'
     key: 'String'
     message: 'String'
+  }
+  InvalidArgumentsError: { // field return type name
+    code: 'ErrorCode'
+    invalidArguments: 'Error'
+    message: 'ErrorMessage'
   }
   Mutation: { // field return type name
     createUser: 'UserResult'
@@ -93,6 +110,10 @@ export interface NexusGenFieldTypeNames {
     id: 'ID'
     username: 'String'
     verified: 'Boolean'
+  }
+  UserAuthenticationError: { // field return type name
+    code: 'ErrorCode'
+    message: 'ErrorMessage'
   }
 }
 
@@ -113,7 +134,7 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
-  UserResult: "Error" | "User"
+  UserResult: "InvalidArgumentsError" | "User" | "UserAuthenticationError"
 }
 
 export interface NexusGenTypeInterfaces {
@@ -123,7 +144,7 @@ export type NexusGenObjectNames = keyof NexusGenObjects;
 
 export type NexusGenInputNames = never;
 
-export type NexusGenEnumNames = never;
+export type NexusGenEnumNames = keyof NexusGenEnums;
 
 export type NexusGenInterfaceNames = never;
 
@@ -131,7 +152,7 @@ export type NexusGenScalarNames = keyof NexusGenScalars;
 
 export type NexusGenUnionNames = keyof NexusGenUnions;
 
-export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = "Error" | "User";
+export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = "Error" | "InvalidArgumentsError" | "User" | "UserAuthenticationError";
 
 export type NexusGenAbstractsUsingStrategyResolveType = never;
 
@@ -174,6 +195,18 @@ declare global {
   interface NexusGenPluginTypeConfig<TypeName extends string> {
   }
   interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
+    /**
+     * Authorization for an individual field. Returning "undefined"
+     * or "Promise<undefined>" means the field can be accessed.
+     * Returning "UserAuthenticationError" will prevent the resolver from executing.
+     */
+    authorization?: (ctx: any) => NexusGenFieldTypes['UserAuthenticationError'] | undefined
+    /**
+     * Validation for an individual field. Returning "undefined"
+     * or "Promise<undefined>" means the field can be accessed.
+     * Returning InvalidArgumentsError or "Promise<InvalidArgumentsError>" will prevent the resolver from executing.
+     */
+    validation?: (args: any) => NexusGenFieldTypes['InvalidArgumentsError'] | undefined
   }
   interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
   }

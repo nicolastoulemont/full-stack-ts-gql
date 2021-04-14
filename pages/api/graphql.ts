@@ -6,7 +6,10 @@ export const config = {
 	}
 }
 
-const server = new ApolloServer({ schema })
+const server = new ApolloServer({
+	schema,
+	context: ({ req, res }) => ({ req, res, ctx: { logged: true } })
+})
 
 const handler = server.createHandler({
 	path: '/api/graphql'
