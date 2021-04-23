@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import { useState } from 'react'
-import { isType, isTypeInTuple } from 'utils'
+import { isType, isTypeInTuple, isEither } from 'utils'
 import { CheckIcon, CloseIcon, NotAllowedIcon } from '@chakra-ui/icons'
 import { GET_USERS } from 'graphql/user/queries'
 import {
@@ -43,11 +43,7 @@ export default function Home() {
 		const { data } = await saveUser({
 			update: (cache, { data: { createUser } }) => {
 				const existingUsers = cache.readQuery<UsersQuery>({ query: GET_USERS })
-				if (
-					isType(createUser, 'ActiveUser') ||
-					isType(createUser, 'BannedUser') ||
-					isType(createUser, 'DeletedUser')
-				) {
+				if (isType(createUser, 'ActiveUser')) {
 					cache.writeQuery({
 						query: GET_USERS,
 						data: {
@@ -141,12 +137,8 @@ function UserListItem({ user }) {
 			const existingUsers = cache.readQuery<UsersQuery>({ query: GET_USERS })
 			const filteredUsers = existingUsers.users.filter(
 				(user) =>
-					(isType(user, 'ActiveUser') ||
-						isType(user, 'BannedUser') ||
-						isType(user, 'DeletedUser')) &&
-					(isType(changeUserStatus, 'ActiveUser') ||
-						isType(changeUserStatus, 'BannedUser') ||
-						isType(changeUserStatus, 'DeletedUser')) &&
+					isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
+					isEither(changeUserStatus, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
 					user.id !== changeUserStatus.id
 			)
 

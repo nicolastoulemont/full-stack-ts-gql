@@ -19,12 +19,12 @@ export const fieldAuthorizationPlugin = plugin({
 	fieldDefTypes: fieldDefTypes,
 	onCreateFieldResolver(config) {
 		const authorization = config.fieldConfig.extensions?.nexus?.config.authorization
-		// If the field doesn't have an auth field, don't worry about wrapping the resolver
+		// If the field doesn't have an authorization field, don't worry about wrapping the resolver
 		if (authorization == null) {
 			return
 		}
 
-		// If it does have this field, but it's not a function, it's wrong - let's provide a warning
+		// If it does have this field, but it's not a function, it's wrong -> print a warning
 		if (typeof authorization !== 'function') {
 			console.error(
 				new Error(
