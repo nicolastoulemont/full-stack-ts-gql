@@ -6,6 +6,7 @@ type ActiveUser implements User {
   email: String
   id: Int
   name: String
+  posts: [Post]
   status: UserStatus
 }
 
@@ -53,7 +54,7 @@ type InvalidArgumentsError {
 
 type Mutation {
   changeUserStatus(id: Int!, status: UserStatus!): UserResult
-  createPost(authorEmail: String, content: String, title: String!): Post
+  createPost(authorEmail: String!, content: String, title: String!): PostResult
   createUser(email: String!, name: String!): UserResult
 }
 
@@ -66,6 +67,9 @@ type Post {
   title: String
   updatedAt: DateTime
 }
+
+"""Return a post and post related errors"""
+union PostResult = InvalidArgumentsError | Post | UserAuthenticationError
 
 type Query {
   userById(id: ID!): UserResult

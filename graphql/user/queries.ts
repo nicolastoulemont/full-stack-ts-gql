@@ -21,6 +21,10 @@ export const GET_USERS = gql`
 				name
 				status
 				email
+				posts {
+					id
+					title
+				}
 			}
 			... on DeletedUser {
 				id

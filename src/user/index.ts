@@ -1,6 +1,7 @@
 import { enumType, interfaceType, objectType, unionType } from 'nexus'
 export * from './query'
 export * from './mutation'
+import prisma from 'lib/prisma'
 
 export const User = interfaceType({
 	name: 'User',
@@ -17,6 +18,10 @@ export const ActiveUser = objectType({
 	definition(t) {
 		t.implements('User')
 		t.string('email')
+		t.list.field('posts', {
+			type: 'Post',
+			resolve: async (u) => await prisma.user.findUnique({ where: { id: u.id } }).posts()
+		})
 	}
 })
 

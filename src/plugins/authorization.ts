@@ -9,7 +9,7 @@ const fieldDefTypes = printedGenTyping({
       or "Promise<undefined>" means the field can be accessed.
       Returning "UserAuthenticationError" will prevent the resolver from executing.
     `,
-	type: `(ctx: any) => NexusGenFieldTypes['UserAuthenticationError'] | undefined`
+	type: `(ctx: any) => Promise<NexusGenFieldTypes['UserAuthenticationError'] | undefined> | NexusGenFieldTypes['UserAuthenticationError'] | undefined`
 })
 
 export const fieldAuthorizationPlugin = plugin({
@@ -37,7 +37,7 @@ export const fieldAuthorizationPlugin = plugin({
 		}
 
 		return async (root, args, ctx, info, next) => {
-			const error = authorization(ctx)
+			const error = await authorization(ctx)
 			if (error) return error
 			return await next(root, args, ctx, info)
 		}

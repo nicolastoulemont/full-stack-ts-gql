@@ -21,6 +21,7 @@ export type ActiveUser = User & {
   email?: Maybe<Scalars['String']>;
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
+  posts?: Maybe<Array<Maybe<Post>>>;
   status?: Maybe<UserStatus>;
 };
 
@@ -69,7 +70,7 @@ export type InvalidArgumentsError = {
 export type Mutation = {
   __typename: 'Mutation';
   changeUserStatus?: Maybe<UserResult>;
-  createPost?: Maybe<Post>;
+  createPost?: Maybe<PostResult>;
   createUser?: Maybe<UserResult>;
 };
 
@@ -81,7 +82,7 @@ export type MutationChangeUserStatusArgs = {
 
 
 export type MutationCreatePostArgs = {
-  authorEmail?: Maybe<Scalars['String']>;
+  authorEmail: Scalars['String'];
   content?: Maybe<Scalars['String']>;
   title: Scalars['String'];
 };
@@ -102,6 +103,9 @@ export type Post = {
   title?: Maybe<Scalars['String']>;
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
+
+/** Return a post and post related errors */
+export type PostResult = InvalidArgumentsError | Post | UserAuthenticationError;
 
 export type Query = {
   __typename: 'Query';
@@ -135,6 +139,28 @@ export enum UserStatus {
   Banned = 'BANNED',
   Deleted = 'DELETED'
 }
+
+export type CreatePostMutationVariables = Exact<{
+  title: Scalars['String'];
+  content?: Maybe<Scalars['String']>;
+  authorEmail: Scalars['String'];
+}>;
+
+
+export type CreatePostMutation = (
+  { __typename: 'Mutation' }
+  & { createPost?: Maybe<(
+    { __typename: 'InvalidArgumentsError' }
+    & Pick<InvalidArgumentsError, 'code' | 'message'>
+    & { invalidArguments?: Maybe<Array<Maybe<(
+      { __typename: 'Error' }
+      & Pick<Error, 'key' | 'message'>
+    )>>> }
+  ) | (
+    { __typename: 'Post' }
+    & Pick<Post, 'id' | 'title'>
+  ) | { __typename: 'UserAuthenticationError' }> }
+);
 
 export type CreateUserMutationVariables = Exact<{
   name: Scalars['String'];
@@ -204,6 +230,10 @@ export type UsersQuery = (
   & { users?: Maybe<Array<Maybe<(
     { __typename: 'ActiveUser' }
     & Pick<ActiveUser, 'id' | 'name' | 'status' | 'email'>
+    & { posts?: Maybe<Array<Maybe<(
+      { __typename: 'Post' }
+      & Pick<Post, 'id' | 'title'>
+    )>>> }
   ) | (
     { __typename: 'BannedUser' }
     & Pick<BannedUser, 'id' | 'name' | 'status' | 'banReason'>
@@ -214,6 +244,52 @@ export type UsersQuery = (
 );
 
 
+export const CreatePostDocument = gql`
+    mutation CreatePost($title: String!, $content: String, $authorEmail: String!) {
+  createPost(title: $title, content: $content, authorEmail: $authorEmail) {
+    ... on Post {
+      id
+      title
+    }
+    ... on InvalidArgumentsError {
+      code
+      message
+      invalidArguments {
+        key
+        message
+      }
+    }
+  }
+}
+    `;
+export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
+
+/**
+ * __useCreatePostMutation__
+ *
+ * To run a mutation, you first call `useCreatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
+ *   variables: {
+ *      title: // value for 'title'
+ *      content: // value for 'content'
+ *      authorEmail: // value for 'authorEmail'
+ *   },
+ * });
+ */
+export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
+      }
+export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
+export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
+export type CreatePostMutationOptions = Apollo.BaseMutationOptions<CreatePostMutation, CreatePostMutationVariables>;
 export const CreateUserDocument = gql`
     mutation CreateUser($name: String!, $email: String!) {
   createUser(name: $name, email: $email) {
@@ -368,6 +444,10 @@ export const UsersDocument = gql`
       name
       status
       email
+      posts {
+        id
+        title
+      }
     }
     ... on DeletedUser {
       id

@@ -1,10 +1,10 @@
 import prisma from 'lib/prisma'
-import { objectType } from 'nexus'
+import { objectType, unionType } from 'nexus'
 export * from './mutation'
 
 export const Post = objectType({
 	name: 'Post',
-	isTypeOf: (data) => Boolean((data as any).name),
+	isTypeOf: (data) => Boolean((data as any).title),
 	definition(t) {
 		t.int('id')
 		t.date('createdAt')
@@ -14,8 +14,15 @@ export const Post = objectType({
 		t.boolean('published')
 		t.nullable.field('author', {
 			type: 'User',
-			resolve: (parent) =>
-				prisma.post.findUnique({ where: { id: Number(parent.id) } }).author()
+			resolve: async (p) => await prisma.post.findUnique({ where: { id: p.id } }).author()
 		})
+	}
+})
+
+export const PostResult = unionType({
+	name: 'PostResult',
+	description: 'Return a post and post related errors',
+	definition(t) {
+		t.members('Post', 'UserAuthenticationError', 'InvalidArgumentsError')
 	}
 })
