@@ -202,27 +202,29 @@ function PostForm({ activeUsers = [] }: { activeUsers: ActiveUsers }) {
 
 		update: (cache, { data: { createPost } }) => {
 			const existingUsers = cache.readQuery<UsersQuery>({ query: GET_USERS })
-			const [author] = existingUsers.users.filter(
-				(user) =>
-					isType(user, 'ActiveUser') &&
-					isType(createPost, 'Post') &&
-					user.email === authorEmail
-			) as Array<ActiveUser>
+			if (isType(createPost, 'Post')) {
+				const author = existingUsers.users.find(
+					(user) =>
+						isType(user, 'ActiveUser') &&
+						isType(createPost, 'Post') &&
+						user.email === authorEmail
+				) as ActiveUser
 
-			const updatedAuthor = { ...author, posts: [...author.posts, createPost] }
+				const updatedAuthor = { ...author, posts: [...author.posts, createPost] }
 
-			const otherUsers = existingUsers.users.filter(
-				(user) =>
-					isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
-					user.id !== author.id
-			)
+				const otherUsers = existingUsers.users.filter(
+					(user) =>
+						isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
+						user.id !== author.id
+				)
 
-			cache.writeQuery({
-				query: GET_USERS,
-				data: {
-					users: [...otherUsers, updatedAuthor]
-				}
-			})
+				cache.writeQuery({
+					query: GET_USERS,
+					data: {
+						users: [...otherUsers, updatedAuthor]
+					}
+				})
+			}
 		}
 	})
 
