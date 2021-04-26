@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import React, { useState } from 'react'
-import { isType, isTypeInTuple, isEither, toErrorRecord } from 'utils'
+import { toErrorRecord } from 'utils'
+import { isType, isTypeInTuple, isEither } from 'ts-gql-helpers'
 import { CheckIcon, CloseIcon, NotAllowedIcon } from '@chakra-ui/icons'
 import { GET_USERS } from 'graphql/user/queries'
 import {
@@ -213,6 +214,11 @@ function PostForm({ activeUsers = [] }: { activeUsers: ActiveUsers }) {
 				const updatedAuthor = { ...author, posts: [...author.posts, createPost] }
 
 				const otherUsers = existingUsers.users.filter(
+					(user) =>
+						isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
+						user.id !== author.id
+				)
+				const u = existingUsers.users.filter(
 					(user) =>
 						isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
 						user.id !== author.id
