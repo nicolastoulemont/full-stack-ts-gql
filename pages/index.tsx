@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import React, { useState } from 'react'
 import { toErrorRecord } from 'utils'
-import { isType, isTypeInTuple, isEither } from 'ts-gql-helpers'
+import { isType, isTypeInTuple, isEither, isNot } from 'ts-gql-helpers'
 import { CheckIcon, CloseIcon, NotAllowedIcon } from '@chakra-ui/icons'
 import { GET_USERS } from 'graphql/user/queries'
 import {
@@ -64,7 +64,6 @@ export default function Home() {
 					<UserForm />
 					<PostForm activeUsers={activeUsers} />
 				</Grid>
-
 				<Grid width='100%' maxW='1200px' templateColumns='repeat(2, 1fr)' gap={6} px={6}>
 					<GridItem>
 						<UnorderedList width='100%' ml={0}>
@@ -152,8 +151,8 @@ function UserForm() {
 		if (isType(data?.createUser, 'ActiveUser')) {
 			setState(initialUserState)
 			setErrors({})
-		} else {
-			setErrors(data?.createUser)
+		} else if (isType(data?.createUser, 'InvalidArgumentsError')) {
+			setErrors(toErrorRecord(data.createUser.invalidArguments))
 		}
 	}
 	return (
@@ -214,11 +213,6 @@ function PostForm({ activeUsers = [] }: { activeUsers: ActiveUsers }) {
 				const updatedAuthor = { ...author, posts: [...author.posts, createPost] }
 
 				const otherUsers = existingUsers.users.filter(
-					(user) =>
-						isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
-						user.id !== author.id
-				)
-				const u = existingUsers.users.filter(
 					(user) =>
 						isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
 						user.id !== author.id
@@ -290,7 +284,7 @@ function UserListItem({ user, children }: { user: any; children?: React.ReactNod
 			const filteredUsers = existingUsers.users.filter(
 				(user) =>
 					isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
-					isEither(changeUserStatus, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
+					isNot(changeUserStatus, ['UserAuthenticationError', 'InvalidArgumentsError']) &&
 					user.id !== changeUserStatus.id
 			)
 

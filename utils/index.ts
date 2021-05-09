@@ -1,7 +1,7 @@
-import { Error } from 'gql-gen'
+import { InvalidArgument } from 'gql-gen'
 import { NexusGenFieldTypes } from 'src/nexus'
 
-type ApiErrorArray = Array<Pick<Error, 'message' | 'key'>>
+type ApiErrorArray = Array<Pick<InvalidArgument, 'message' | 'key'>>
 export function toErrorRecord(errorsArray: ApiErrorArray) {
 	return errorsArray.reduce((acc, { key, message }) => {
 		acc[key] = message

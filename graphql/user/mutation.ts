@@ -7,6 +7,10 @@ export const CREATE_USER = gql`
 				name
 				status
 				email
+				posts {
+					id
+					title
+				}
 			}
 			... on UserAuthenticationError {
 				code
@@ -31,6 +35,10 @@ export const CHANGE_USER_STATUS = gql`
 				name
 				status
 				email
+				posts {
+					id
+					title
+				}
 			}
 			... on DeletedUser {
 				id
@@ -43,6 +51,10 @@ export const CHANGE_USER_STATUS = gql`
 				name
 				status
 				banReason
+			}
+			... on UserAuthenticationError {
+				code
+				message
 			}
 			... on InvalidArgumentsError {
 				code

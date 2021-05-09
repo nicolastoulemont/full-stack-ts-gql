@@ -43,27 +43,32 @@ export type DeletedUser = User & {
 };
 
 export type Error = {
-  __typename: 'Error';
-  key?: Maybe<Scalars['String']>;
-  message?: Maybe<Scalars['String']>;
+  code?: Maybe<ErrorCode>;
+  message?: Maybe<ErrorMessage>;
 };
 
-/** The differents error codes the api will return if needed */
+/** The differents error codes the api will return */
 export enum ErrorCode {
   BadRequest = 'BAD_REQUEST',
   Unauthorized = 'UNAUTHORIZED'
 }
 
-/** The differents error message the api will return if needed */
+/** The differents error message the api will return */
 export enum ErrorMessage {
   UnableToProcessRequestDueToClientError = 'UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR',
   UnauthenticatedPleaseLogin = 'UNAUTHENTICATED_PLEASE_LOGIN'
 }
 
-export type InvalidArgumentsError = {
+export type InvalidArgument = {
+  __typename: 'InvalidArgument';
+  key?: Maybe<Scalars['String']>;
+  message?: Maybe<Scalars['String']>;
+};
+
+export type InvalidArgumentsError = Error & {
   __typename: 'InvalidArgumentsError';
   code?: Maybe<ErrorCode>;
-  invalidArguments?: Maybe<Array<Maybe<Error>>>;
+  invalidArguments?: Maybe<Array<Maybe<InvalidArgument>>>;
   message?: Maybe<ErrorMessage>;
 };
 
@@ -124,7 +129,7 @@ export type User = {
   status?: Maybe<UserStatus>;
 };
 
-export type UserAuthenticationError = {
+export type UserAuthenticationError = Error & {
   __typename: 'UserAuthenticationError';
   code?: Maybe<ErrorCode>;
   message?: Maybe<ErrorMessage>;
@@ -153,8 +158,8 @@ export type CreatePostMutation = (
     { __typename: 'InvalidArgumentsError' }
     & Pick<InvalidArgumentsError, 'code' | 'message'>
     & { invalidArguments?: Maybe<Array<Maybe<(
-      { __typename: 'Error' }
-      & Pick<Error, 'key' | 'message'>
+      { __typename: 'InvalidArgument' }
+      & Pick<InvalidArgument, 'key' | 'message'>
     )>>> }
   ) | (
     { __typename: 'Post' }
@@ -173,12 +178,16 @@ export type CreateUserMutation = (
   & { createUser?: Maybe<(
     { __typename: 'ActiveUser' }
     & Pick<ActiveUser, 'id' | 'name' | 'status' | 'email'>
+    & { posts?: Maybe<Array<Maybe<(
+      { __typename: 'Post' }
+      & Pick<Post, 'id' | 'title'>
+    )>>> }
   ) | { __typename: 'BannedUser' } | { __typename: 'DeletedUser' } | (
     { __typename: 'InvalidArgumentsError' }
     & Pick<InvalidArgumentsError, 'code' | 'message'>
     & { invalidArguments?: Maybe<Array<Maybe<(
-      { __typename: 'Error' }
-      & Pick<Error, 'key' | 'message'>
+      { __typename: 'InvalidArgument' }
+      & Pick<InvalidArgument, 'key' | 'message'>
     )>>> }
   ) | (
     { __typename: 'UserAuthenticationError' }
@@ -197,6 +206,10 @@ export type ChangeUserStatusMutation = (
   & { changeUserStatus?: Maybe<(
     { __typename: 'ActiveUser' }
     & Pick<ActiveUser, 'id' | 'name' | 'status' | 'email'>
+    & { posts?: Maybe<Array<Maybe<(
+      { __typename: 'Post' }
+      & Pick<Post, 'id' | 'title'>
+    )>>> }
   ) | (
     { __typename: 'BannedUser' }
     & Pick<BannedUser, 'id' | 'name' | 'status' | 'banReason'>
@@ -206,7 +219,10 @@ export type ChangeUserStatusMutation = (
   ) | (
     { __typename: 'InvalidArgumentsError' }
     & Pick<InvalidArgumentsError, 'code' | 'message'>
-  ) | { __typename: 'UserAuthenticationError' }> }
+  ) | (
+    { __typename: 'UserAuthenticationError' }
+    & Pick<UserAuthenticationError, 'code' | 'message'>
+  )> }
 );
 
 export type UserByIdQueryVariables = Exact<{
@@ -298,6 +314,10 @@ export const CreateUserDocument = gql`
       name
       status
       email
+      posts {
+        id
+        title
+      }
     }
     ... on UserAuthenticationError {
       code
@@ -349,6 +369,10 @@ export const ChangeUserStatusDocument = gql`
       name
       status
       email
+      posts {
+        id
+        title
+      }
     }
     ... on DeletedUser {
       id
@@ -361,6 +385,10 @@ export const ChangeUserStatusDocument = gql`
       name
       status
       banReason
+    }
+    ... on UserAuthenticationError {
+      code
+      message
     }
     ... on InvalidArgumentsError {
       code

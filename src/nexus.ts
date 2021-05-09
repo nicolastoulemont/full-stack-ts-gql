@@ -64,12 +64,12 @@ export interface NexusGenObjects {
     name?: string | null; // String
     status?: NexusGenEnums['UserStatus'] | null; // UserStatus
   }
-  Error: { // root type
+  InvalidArgument: { // root type
     key?: string | null; // String
     message?: string | null; // String
   }
   InvalidArgumentsError: { // root type
-    invalidArguments?: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
+    invalidArguments?: Array<NexusGenRootTypes['InvalidArgument'] | null> | null; // [InvalidArgument]
   }
   Mutation: {};
   Post: { // root type
@@ -85,6 +85,7 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
+  Error: NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['UserAuthenticationError'];
   User: NexusGenRootTypes['ActiveUser'] | NexusGenRootTypes['BannedUser'] | NexusGenRootTypes['DeletedUser'];
 }
 
@@ -117,13 +118,13 @@ export interface NexusGenFieldTypes {
     name: string | null; // String
     status: NexusGenEnums['UserStatus'] | null; // UserStatus
   }
-  Error: { // field return type
+  InvalidArgument: { // field return type
     key: string | null; // String
     message: string | null; // String
   }
   InvalidArgumentsError: { // field return type
     code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
-    invalidArguments: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
+    invalidArguments: Array<NexusGenRootTypes['InvalidArgument'] | null> | null; // [InvalidArgument]
     message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
   }
   Mutation: { // field return type
@@ -145,6 +146,10 @@ export interface NexusGenFieldTypes {
     users: Array<NexusGenRootTypes['UserResult'] | null> | null; // [UserResult]
   }
   UserAuthenticationError: { // field return type
+    code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
+    message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
+  }
+  Error: { // field return type
     code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
     message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
   }
@@ -175,13 +180,13 @@ export interface NexusGenFieldTypeNames {
     name: 'String'
     status: 'UserStatus'
   }
-  Error: { // field return type name
+  InvalidArgument: { // field return type name
     key: 'String'
     message: 'String'
   }
   InvalidArgumentsError: { // field return type name
     code: 'ErrorCode'
-    invalidArguments: 'Error'
+    invalidArguments: 'InvalidArgument'
     message: 'ErrorMessage'
   }
   Mutation: { // field return type name
@@ -203,6 +208,10 @@ export interface NexusGenFieldTypeNames {
     users: 'UserResult'
   }
   UserAuthenticationError: { // field return type name
+    code: 'ErrorCode'
+    message: 'ErrorMessage'
+  }
+  Error: { // field return type name
     code: 'ErrorCode'
     message: 'ErrorMessage'
   }
@@ -239,6 +248,7 @@ export interface NexusGenArgTypes {
 export interface NexusGenAbstractTypeMembers {
   PostResult: "InvalidArgumentsError" | "Post" | "UserAuthenticationError"
   UserResult: "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "UserAuthenticationError"
+  Error: "InvalidArgumentsError" | "UserAuthenticationError"
   User: "ActiveUser" | "BannedUser" | "DeletedUser"
 }
 
@@ -246,6 +256,8 @@ export interface NexusGenTypeInterfaces {
   ActiveUser: "User"
   BannedUser: "User"
   DeletedUser: "User"
+  InvalidArgumentsError: "Error"
+  UserAuthenticationError: "Error"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
@@ -260,7 +272,7 @@ export type NexusGenScalarNames = keyof NexusGenScalars;
 
 export type NexusGenUnionNames = keyof NexusGenUnions;
 
-export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = "ActiveUser" | "BannedUser" | "DeletedUser" | "Error" | "InvalidArgumentsError" | "Post" | "UserAuthenticationError";
+export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "Post" | "UserAuthenticationError";
 
 export type NexusGenAbstractsUsingStrategyResolveType = never;
 
