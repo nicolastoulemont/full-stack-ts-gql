@@ -4,9 +4,23 @@
  */
 
 
-
-
-
+import { core } from "nexus"
+declare global {
+  interface NexusGenCustomInputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    date<FieldName extends string>(fieldName: FieldName, opts?: core.CommonInputFieldConfig<TypeName, FieldName>): void // "DateTime";
+  }
+}
+declare global {
+  interface NexusGenCustomOutputMethods<TypeName extends string> {
+    /**
+     * A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+     */
+    date<FieldName extends string>(fieldName: FieldName, ...opts: core.ScalarOutSpread<TypeName, FieldName>): void // "DateTime";
+  }
+}
 
 
 declare global {
@@ -17,6 +31,9 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  ErrorCode: "BAD_REQUEST" | "UNAUTHORIZED"
+  ErrorMessage: "UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR" | "UNAUTHENTICATED_PLEASE_LOGIN"
+  UserStatus: "ACTIVE" | "BANNED" | "DELETED"
 }
 
 export interface NexusGenScalars {
@@ -25,91 +42,202 @@ export interface NexusGenScalars {
   Float: number
   Boolean: boolean
   ID: string
+  DateTime: any
 }
 
 export interface NexusGenObjects {
-  Error: { // root type
+  ActiveUser: { // root type
+    email?: string | null; // String
+    id?: number | null; // Int
+    name?: string | null; // String
+    status?: NexusGenEnums['UserStatus'] | null; // UserStatus
+  }
+  BannedUser: { // root type
+    banReason?: string | null; // String
+    id?: number | null; // Int
+    name?: string | null; // String
+    status?: NexusGenEnums['UserStatus'] | null; // UserStatus
+  }
+  DeletedUser: { // root type
+    deletedAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: number | null; // Int
+    name?: string | null; // String
+    status?: NexusGenEnums['UserStatus'] | null; // UserStatus
+  }
+  InvalidArgument: { // root type
     key?: string | null; // String
     message?: string | null; // String
   }
+  InvalidArgumentsError: { // root type
+    invalidArguments?: Array<NexusGenRootTypes['InvalidArgument'] | null> | null; // [InvalidArgument]
+  }
+  Mutation: {};
+  Post: { // root type
+    content?: string | null; // String
+    createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
+    id?: number | null; // Int
+    published?: boolean | null; // Boolean
+    title?: string | null; // String
+    updatedAt?: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Query: {};
-  User: { // root type
-    email?: string | null; // String
-    id?: string | null; // ID
-    username?: string | null; // String
-    verified?: boolean | null; // Boolean
-  }
-  UserResponse: { // root type
-    errors?: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
-    user?: NexusGenRootTypes['User'] | null; // User
-  }
-  UsersResponse: { // root type
-    errors?: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
-    users?: Array<NexusGenRootTypes['User'] | null> | null; // [User]
-  }
+  UserAuthenticationError: {};
 }
 
 export interface NexusGenInterfaces {
+  Error: NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['UserAuthenticationError'];
+  User: NexusGenRootTypes['ActiveUser'] | NexusGenRootTypes['BannedUser'] | NexusGenRootTypes['DeletedUser'];
 }
 
 export interface NexusGenUnions {
+  PostResult: NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['Post'] | NexusGenRootTypes['UserAuthenticationError'];
+  UserResult: NexusGenRootTypes['ActiveUser'] | NexusGenRootTypes['BannedUser'] | NexusGenRootTypes['DeletedUser'] | NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['UserAuthenticationError'];
 }
 
-export type NexusGenRootTypes = NexusGenObjects
+export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects & NexusGenUnions
 
-export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars
+export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
-  Error: { // field return type
+  ActiveUser: { // field return type
+    email: string | null; // String
+    id: number | null; // Int
+    name: string | null; // String
+    posts: Array<NexusGenRootTypes['Post'] | null> | null; // [Post]
+    status: NexusGenEnums['UserStatus'] | null; // UserStatus
+  }
+  BannedUser: { // field return type
+    banReason: string | null; // String
+    id: number | null; // Int
+    name: string | null; // String
+    status: NexusGenEnums['UserStatus'] | null; // UserStatus
+  }
+  DeletedUser: { // field return type
+    deletedAt: NexusGenScalars['DateTime'] | null; // DateTime
+    id: number | null; // Int
+    name: string | null; // String
+    status: NexusGenEnums['UserStatus'] | null; // UserStatus
+  }
+  InvalidArgument: { // field return type
     key: string | null; // String
     message: string | null; // String
   }
+  InvalidArgumentsError: { // field return type
+    code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
+    invalidArguments: Array<NexusGenRootTypes['InvalidArgument'] | null> | null; // [InvalidArgument]
+    message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
+  }
+  Mutation: { // field return type
+    changeUserStatus: NexusGenRootTypes['UserResult'] | null; // UserResult
+    createPost: NexusGenRootTypes['PostResult'] | null; // PostResult
+    createUser: NexusGenRootTypes['UserResult'] | null; // UserResult
+  }
+  Post: { // field return type
+    author: NexusGenRootTypes['User'] | null; // User
+    content: string | null; // String
+    createdAt: NexusGenScalars['DateTime'] | null; // DateTime
+    id: number | null; // Int
+    published: boolean | null; // Boolean
+    title: string | null; // String
+    updatedAt: NexusGenScalars['DateTime'] | null; // DateTime
+  }
   Query: { // field return type
-    userById: NexusGenRootTypes['UserResponse'] | null; // UserResponse
-    users: NexusGenRootTypes['UsersResponse'] | null; // UsersResponse
+    userById: NexusGenRootTypes['UserResult'] | null; // UserResult
+    users: Array<NexusGenRootTypes['UserResult'] | null> | null; // [UserResult]
+  }
+  UserAuthenticationError: { // field return type
+    code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
+    message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
+  }
+  Error: { // field return type
+    code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
+    message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
   }
   User: { // field return type
-    email: string | null; // String
-    id: string | null; // ID
-    username: string | null; // String
-    verified: boolean | null; // Boolean
-  }
-  UserResponse: { // field return type
-    errors: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
-    user: NexusGenRootTypes['User'] | null; // User
-  }
-  UsersResponse: { // field return type
-    errors: Array<NexusGenRootTypes['Error'] | null> | null; // [Error]
-    users: Array<NexusGenRootTypes['User'] | null> | null; // [User]
+    id: number | null; // Int
+    name: string | null; // String
+    status: NexusGenEnums['UserStatus'] | null; // UserStatus
   }
 }
 
 export interface NexusGenFieldTypeNames {
-  Error: { // field return type name
+  ActiveUser: { // field return type name
+    email: 'String'
+    id: 'Int'
+    name: 'String'
+    posts: 'Post'
+    status: 'UserStatus'
+  }
+  BannedUser: { // field return type name
+    banReason: 'String'
+    id: 'Int'
+    name: 'String'
+    status: 'UserStatus'
+  }
+  DeletedUser: { // field return type name
+    deletedAt: 'DateTime'
+    id: 'Int'
+    name: 'String'
+    status: 'UserStatus'
+  }
+  InvalidArgument: { // field return type name
     key: 'String'
     message: 'String'
   }
+  InvalidArgumentsError: { // field return type name
+    code: 'ErrorCode'
+    invalidArguments: 'InvalidArgument'
+    message: 'ErrorMessage'
+  }
+  Mutation: { // field return type name
+    changeUserStatus: 'UserResult'
+    createPost: 'PostResult'
+    createUser: 'UserResult'
+  }
+  Post: { // field return type name
+    author: 'User'
+    content: 'String'
+    createdAt: 'DateTime'
+    id: 'Int'
+    published: 'Boolean'
+    title: 'String'
+    updatedAt: 'DateTime'
+  }
   Query: { // field return type name
-    userById: 'UserResponse'
-    users: 'UsersResponse'
+    userById: 'UserResult'
+    users: 'UserResult'
+  }
+  UserAuthenticationError: { // field return type name
+    code: 'ErrorCode'
+    message: 'ErrorMessage'
+  }
+  Error: { // field return type name
+    code: 'ErrorCode'
+    message: 'ErrorMessage'
   }
   User: { // field return type name
-    email: 'String'
-    id: 'ID'
-    username: 'String'
-    verified: 'Boolean'
-  }
-  UserResponse: { // field return type name
-    errors: 'Error'
-    user: 'User'
-  }
-  UsersResponse: { // field return type name
-    errors: 'Error'
-    users: 'User'
+    id: 'Int'
+    name: 'String'
+    status: 'UserStatus'
   }
 }
 
 export interface NexusGenArgTypes {
+  Mutation: {
+    changeUserStatus: { // args
+      id: number; // Int!
+      status: NexusGenEnums['UserStatus']; // UserStatus!
+    }
+    createPost: { // args
+      authorEmail: string; // String!
+      content?: string | null; // String
+      title: string; // String!
+    }
+    createUser: { // args
+      email: string; // String!
+      name: string; // String!
+    }
+  }
   Query: {
     userById: { // args
       id: string; // ID!
@@ -118,32 +246,41 @@ export interface NexusGenArgTypes {
 }
 
 export interface NexusGenAbstractTypeMembers {
+  PostResult: "InvalidArgumentsError" | "Post" | "UserAuthenticationError"
+  UserResult: "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "UserAuthenticationError"
+  Error: "InvalidArgumentsError" | "UserAuthenticationError"
+  User: "ActiveUser" | "BannedUser" | "DeletedUser"
 }
 
 export interface NexusGenTypeInterfaces {
+  ActiveUser: "User"
+  BannedUser: "User"
+  DeletedUser: "User"
+  InvalidArgumentsError: "Error"
+  UserAuthenticationError: "Error"
 }
 
 export type NexusGenObjectNames = keyof NexusGenObjects;
 
 export type NexusGenInputNames = never;
 
-export type NexusGenEnumNames = never;
+export type NexusGenEnumNames = keyof NexusGenEnums;
 
-export type NexusGenInterfaceNames = never;
+export type NexusGenInterfaceNames = keyof NexusGenInterfaces;
 
 export type NexusGenScalarNames = keyof NexusGenScalars;
 
-export type NexusGenUnionNames = never;
+export type NexusGenUnionNames = keyof NexusGenUnions;
 
-export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = never;
+export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "Post" | "UserAuthenticationError";
 
 export type NexusGenAbstractsUsingStrategyResolveType = never;
 
 export type NexusGenFeaturesConfig = {
   abstractTypeStrategies: {
-    isTypeOf: false
-    resolveType: true
+    isTypeOf: true
     __typename: false
+    resolveType: false
   }
 }
 
@@ -178,6 +315,18 @@ declare global {
   interface NexusGenPluginTypeConfig<TypeName extends string> {
   }
   interface NexusGenPluginFieldConfig<TypeName extends string, FieldName extends string> {
+    /**
+     * Authorization for an individual field. Returning "undefined"
+     * or "Promise<undefined>" means the field can be accessed.
+     * Returning "UserAuthenticationError" will prevent the resolver from executing.
+     */
+    authorization?: (ctx: any) => Promise<NexusGenFieldTypes['UserAuthenticationError'] | undefined> | NexusGenFieldTypes['UserAuthenticationError'] | undefined
+    /**
+     * Validation for an individual field. Returning "undefined"
+     * or "Promise<undefined>" means the field can be accessed.
+     * Returning InvalidArgumentsError or "Promise<InvalidArgumentsError>" will prevent the resolver from executing.
+     */
+    validation?: (args: any) => NexusGenFieldTypes['InvalidArgumentsError'] | undefined
   }
   interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
   }

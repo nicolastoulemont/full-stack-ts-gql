@@ -3,13 +3,10 @@ import gql from 'graphql-tag'
 export const GET_USER_BY_ID = gql`
 	query UserById($id: ID!) {
 		userById(id: $id) {
-			errors {
-				key
-				message
-			}
-			user {
+			... on ActiveUser {
 				id
-				username
+				name
+				status
 				email
 			}
 		}
@@ -19,14 +16,27 @@ export const GET_USER_BY_ID = gql`
 export const GET_USERS = gql`
 	query Users {
 		users {
-			errors {
-				key
-				message
-			}
-			users {
+			... on ActiveUser {
 				id
-				username
+				name
+				status
 				email
+				posts {
+					id
+					title
+				}
+			}
+			... on DeletedUser {
+				id
+				name
+				status
+				deletedAt
+			}
+			... on BannedUser {
+				id
+				name
+				status
+				banReason
 			}
 		}
 	}
