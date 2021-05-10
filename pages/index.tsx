@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { toErrorRecord } from 'utils'
 import { isType, isTypeInTuple, isEither, isNot } from 'ts-gql-helpers'
 import { CheckIcon, CloseIcon, NotAllowedIcon } from '@chakra-ui/icons'
@@ -34,9 +34,15 @@ import {
 export default function Home() {
 	const { data, loading } = useUsersQuery()
 
-	const deletedUsers = data?.users?.filter(isTypeInTuple('DeletedUser')) || []
-	const bannedUsers = data?.users?.filter(isTypeInTuple('BannedUser')) || []
-	const activeUsers = data?.users?.filter(isTypeInTuple('ActiveUser')) || []
+	const deletedUsers = useMemo(() => data?.users?.filter(isTypeInTuple('DeletedUser')) ?? [], [
+		data
+	])
+	const bannedUsers = useMemo(() => data?.users?.filter(isTypeInTuple('BannedUser')) ?? [], [
+		data
+	])
+	const activeUsers = useMemo(() => data?.users?.filter(isTypeInTuple('ActiveUser')) ?? [], [
+		data
+	])
 
 	return (
 		<>
