@@ -34,15 +34,18 @@ import {
 export default function Home() {
 	const { data, loading } = useUsersQuery()
 
-	const deletedUsers = useMemo(() => data?.users?.filter(isTypeInTuple('DeletedUser')) ?? [], [
-		data
-	])
-	const bannedUsers = useMemo(() => data?.users?.filter(isTypeInTuple('BannedUser')) ?? [], [
-		data
-	])
-	const activeUsers = useMemo(() => data?.users?.filter(isTypeInTuple('ActiveUser')) ?? [], [
-		data
-	])
+	const deletedUsers = useMemo(
+		() => data?.users?.filter(isTypeInTuple('DeletedUser')) ?? [],
+		[data]
+	)
+	const bannedUsers = useMemo(
+		() => data?.users?.filter(isTypeInTuple('BannedUser')) ?? [],
+		[data]
+	)
+	const activeUsers = useMemo(
+		() => data?.users?.filter(isTypeInTuple('ActiveUser')) ?? [],
+		[data]
+	)
 
 	return (
 		<>
