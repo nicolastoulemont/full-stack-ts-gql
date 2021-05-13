@@ -1,6 +1,6 @@
 import { ApolloProvider } from '@apollo/client'
-import { useApollo } from 'lib/apolloClient'
-import { ChakraProvider, ColorModeScript } from '@chakra-ui/react'
+import { useApollo } from 'lib/apollo'
+import { ChakraProvider } from '@chakra-ui/react'
 
 function MyApp({ Component, pageProps }) {
 	const client = useApollo()
