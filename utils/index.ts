@@ -1,4 +1,5 @@
 import { InvalidArgument } from 'gql-gen'
+import { PartialInvalidArgumentsError } from './errors'
 import { NexusGenFieldTypes } from 'src/nexus'
 
 type ApiErrorArray = Array<Pick<InvalidArgument, 'message' | 'key'>>
@@ -63,8 +64,7 @@ export function checkArgs(
 	parseObj(args)
 	if (errors.length > 0) {
 		return {
-			code: 'BAD_REQUEST',
-			message: 'UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR',
+			...PartialInvalidArgumentsError,
 			invalidArguments: errors
 		}
 	} else {

@@ -11,7 +11,7 @@ export const createPost = mutationField('createPost', {
 	},
 	validation: (args) => checkArgs(args, ['title', 'authorEmail:mail']),
 	async resolve(_, { title, content, authorEmail }) {
-		const post = await prisma.post.create({
+		return await prisma.post.create({
 			data: {
 				title,
 				content,
@@ -21,6 +21,5 @@ export const createPost = mutationField('createPost', {
 				}
 			}
 		})
-		return post
 	}
 })

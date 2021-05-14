@@ -60,6 +60,10 @@ export const CHANGE_USER_STATUS = gql`
 				code
 				message
 			}
+			... on NotFoundError {
+				code
+				message
+			}
 		}
 	}
 `

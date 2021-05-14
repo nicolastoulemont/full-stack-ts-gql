@@ -1,5 +1,12 @@
 import { plugin } from 'nexus'
-import { printedGenTyping } from 'nexus/dist/utils'
+import { ArgsValue, MaybePromise } from 'nexus/dist/typegenTypeHelpers'
+import { printedGenTyping, printedGenTypingImport } from 'nexus/dist/utils'
+import { NexusGenFieldTypes } from '../nexus'
+
+const FieldvalidationResolverImport = printedGenTypingImport({
+	module: './plugins/validation',
+	bindings: ['FieldValidationResolver']
+})
 
 const fieldDefTypes = printedGenTyping({
 	optional: true,
@@ -9,8 +16,13 @@ const fieldDefTypes = printedGenTyping({
       or "Promise<undefined>" means the field can be accessed.
       Returning InvalidArgumentsError or "Promise<InvalidArgumentsError>" will prevent the resolver from executing.
     `,
-	type: `(args: any) => NexusGenFieldTypes['InvalidArgumentsError'] | undefined`
+	type: 'FieldValidationResolver<TypeName, FieldName>',
+	imports: [FieldvalidationResolverImport]
 })
+
+export type FieldValidationResolver<TypeName extends string, FieldName extends string> = (
+	args: ArgsValue<TypeName, FieldName>
+) => MaybePromise<NexusGenFieldTypes['InvalidArgumentsError'] | undefined>
 
 export const fieldValidationPlugin = plugin({
 	name: 'fieldValidationPlugin',
@@ -37,7 +49,7 @@ export const fieldValidationPlugin = plugin({
 		}
 
 		return async (root, args, ctx, info, next) => {
-			const error = validation(args)
+			const error = await validation(args)
 			if (error) return error
 			return await next(root, args, ctx, info)
 		}

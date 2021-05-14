@@ -293,7 +293,7 @@ function UserListItem({ user, children }: { user: any; children?: React.ReactNod
 			const filteredUsers = existingUsers.users.filter(
 				(user) =>
 					isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
-					isNot(changeUserStatus, ['UserAuthenticationError', 'InvalidArgumentsError']) &&
+					isEither(changeUserStatus, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
 					user.id !== changeUserStatus.id
 			)
 

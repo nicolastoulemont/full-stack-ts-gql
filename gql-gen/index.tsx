@@ -50,11 +50,13 @@ export type Error = {
 /** The differents error codes the api will return */
 export enum ErrorCode {
   BadRequest = 'BAD_REQUEST',
+  NotFound = 'NOT_FOUND',
   Unauthorized = 'UNAUTHORIZED'
 }
 
 /** The differents error message the api will return */
 export enum ErrorMessage {
+  ResourceNotFound = 'RESOURCE_NOT_FOUND',
   UnableToProcessRequestDueToClientError = 'UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR',
   UnauthenticatedPleaseLogin = 'UNAUTHENTICATED_PLEASE_LOGIN'
 }
@@ -98,6 +100,12 @@ export type MutationCreateUserArgs = {
   name: Scalars['String'];
 };
 
+export type NotFoundError = Error & {
+  __typename: 'NotFoundError';
+  code?: Maybe<ErrorCode>;
+  message?: Maybe<ErrorMessage>;
+};
+
 export type Post = {
   __typename: 'Post';
   author?: Maybe<User>;
@@ -136,7 +144,7 @@ export type UserAuthenticationError = Error & {
 };
 
 /** Return a user or user related errors */
-export type UserResult = ActiveUser | BannedUser | DeletedUser | InvalidArgumentsError | UserAuthenticationError;
+export type UserResult = ActiveUser | BannedUser | DeletedUser | InvalidArgumentsError | NotFoundError | UserAuthenticationError;
 
 /** User account status */
 export enum UserStatus {
@@ -189,7 +197,7 @@ export type CreateUserMutation = (
       { __typename: 'InvalidArgument' }
       & Pick<InvalidArgument, 'key' | 'message'>
     )>>> }
-  ) | (
+  ) | { __typename: 'NotFoundError' } | (
     { __typename: 'UserAuthenticationError' }
     & Pick<UserAuthenticationError, 'code' | 'message'>
   )> }
@@ -220,6 +228,9 @@ export type ChangeUserStatusMutation = (
     { __typename: 'InvalidArgumentsError' }
     & Pick<InvalidArgumentsError, 'code' | 'message'>
   ) | (
+    { __typename: 'NotFoundError' }
+    & Pick<NotFoundError, 'code' | 'message'>
+  ) | (
     { __typename: 'UserAuthenticationError' }
     & Pick<UserAuthenticationError, 'code' | 'message'>
   )> }
@@ -235,7 +246,7 @@ export type UserByIdQuery = (
   & { userById?: Maybe<(
     { __typename: 'ActiveUser' }
     & Pick<ActiveUser, 'id' | 'name' | 'status' | 'email'>
-  ) | { __typename: 'BannedUser' } | { __typename: 'DeletedUser' } | { __typename: 'InvalidArgumentsError' } | { __typename: 'UserAuthenticationError' }> }
+  ) | { __typename: 'BannedUser' } | { __typename: 'DeletedUser' } | { __typename: 'InvalidArgumentsError' } | { __typename: 'NotFoundError' } | { __typename: 'UserAuthenticationError' }> }
 );
 
 export type UsersQueryVariables = Exact<{ [key: string]: never; }>;
@@ -256,7 +267,7 @@ export type UsersQuery = (
   ) | (
     { __typename: 'DeletedUser' }
     & Pick<DeletedUser, 'id' | 'name' | 'status' | 'deletedAt'>
-  ) | { __typename: 'InvalidArgumentsError' } | { __typename: 'UserAuthenticationError' }>>> }
+  ) | { __typename: 'InvalidArgumentsError' } | { __typename: 'NotFoundError' } | { __typename: 'UserAuthenticationError' }>>> }
 );
 
 
@@ -391,6 +402,10 @@ export const ChangeUserStatusDocument = gql`
       message
     }
     ... on InvalidArgumentsError {
+      code
+      message
+    }
+    ... on NotFoundError {
       code
       message
     }

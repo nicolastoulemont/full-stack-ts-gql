@@ -1,5 +1,6 @@
 import prisma from 'lib/prisma'
 import { idArg, list, nonNull, queryField } from 'nexus'
+import { NotFoundError } from 'utils/errors'
 
 export const userById = queryField('userById', {
 	type: 'UserResult',
@@ -12,12 +13,13 @@ export const userById = queryField('userById', {
 				id: Number(id)
 			}
 		})
-		return user
+		return user ? user : NotFoundError
 	}
 })
 
 export const users = queryField('users', {
 	type: list('UserResult'),
+	validation: (args) => undefined,
 	async resolve() {
 		const users = await prisma.user.findMany()
 		return users

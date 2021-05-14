@@ -1,5 +1,12 @@
 import { plugin } from 'nexus'
-import { printedGenTyping } from 'nexus/dist/utils'
+import { GetGen, MaybePromise } from 'nexus/dist/typegenTypeHelpers'
+import { printedGenTyping, printedGenTypingImport } from 'nexus/dist/utils'
+import { NexusGenFieldTypes } from '../nexus'
+
+const FieldAuthorizationResolverImport = printedGenTypingImport({
+	module: './plugins/authorization',
+	bindings: ['FieldAuthorizationResolver']
+})
 
 const fieldDefTypes = printedGenTyping({
 	optional: true,
@@ -9,8 +16,13 @@ const fieldDefTypes = printedGenTyping({
       or "Promise<undefined>" means the field can be accessed.
       Returning "UserAuthenticationError" will prevent the resolver from executing.
     `,
-	type: `(ctx: any) => Promise<NexusGenFieldTypes['UserAuthenticationError'] | undefined> | NexusGenFieldTypes['UserAuthenticationError'] | undefined`
+	type: 'FieldAuthorizationResolver<TypeName, FieldName>',
+	imports: [FieldAuthorizationResolverImport]
 })
+
+export type FieldAuthorizationResolver<TypeName extends string, FieldName extends string> = (
+	ctx: GetGen<'context'>
+) => MaybePromise<NexusGenFieldTypes['UserAuthenticationError'] | undefined>
 
 export const fieldAuthorizationPlugin = plugin({
 	name: 'FieldAuthPlugin',

@@ -13,5 +13,9 @@ export const schema = makeSchema({
 		abstractTypeStrategies: {
 			isTypeOf: true
 		}
+	},
+	contextType: {
+		module: path.join(process.cwd(), 'src', 'context.ts'),
+		export: 'Context'
 	}
 })

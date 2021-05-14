@@ -1,5 +1,7 @@
 import prisma from 'lib/prisma'
 import { mutationField, nonNull, stringArg, arg, intArg } from 'nexus'
+import { checkArgs } from 'utils'
+import { UserAuthenticationError } from 'utils/errors'
 
 export const createUser = mutationField('createUser', {
 	type: 'UserResult',
@@ -7,14 +9,8 @@ export const createUser = mutationField('createUser', {
 		name: nonNull(stringArg()),
 		email: nonNull(stringArg())
 	},
-	authorization: ({ ctx }) =>
-		!ctx.logged && { code: 'UNAUTHORIZED', message: 'UNAUTHENTICATED_PLEASE_LOGIN' },
-	validation: (args) =>
-		args.name === 'diane' && {
-			code: 'BAD_REQUEST',
-			message: 'UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR',
-			invalidArguments: [{ key: 'name', message: 'diane is not a valid username' }]
-		},
+	authorization: ({ ctx }) => !ctx.logged && UserAuthenticationError,
+	validation: (args) => checkArgs(args, ['name', 'email:mail']),
 	async resolve(_, { name, email }) {
 		const user = await prisma.user.create({
 			data: {

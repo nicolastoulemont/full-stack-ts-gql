@@ -34,7 +34,8 @@ export const UserResult = unionType({
 			'DeletedUser',
 			'BannedUser',
 			'UserAuthenticationError',
-			'InvalidArgumentsError'
+			'InvalidArgumentsError',
+			'NotFoundError'
 		)
 	}
 })

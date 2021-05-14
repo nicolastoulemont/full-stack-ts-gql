@@ -4,6 +4,9 @@
  */
 
 
+import { Context } from "./context"
+import { FieldAuthorizationResolver } from "./plugins/authorization"
+import { FieldValidationResolver } from "./plugins/validation"
 import { core } from "nexus"
 declare global {
   interface NexusGenCustomInputMethods<TypeName extends string> {
@@ -31,8 +34,8 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  ErrorCode: "BAD_REQUEST" | "UNAUTHORIZED"
-  ErrorMessage: "UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR" | "UNAUTHENTICATED_PLEASE_LOGIN"
+  ErrorCode: "BAD_REQUEST" | "NOT_FOUND" | "UNAUTHORIZED"
+  ErrorMessage: "RESOURCE_NOT_FOUND" | "UNABLE_TO_PROCESS_REQUEST_DUE_TO_CLIENT_ERROR" | "UNAUTHENTICATED_PLEASE_LOGIN"
   UserStatus: "ACTIVE" | "BANNED" | "DELETED"
 }
 
@@ -72,6 +75,7 @@ export interface NexusGenObjects {
     invalidArguments?: Array<NexusGenRootTypes['InvalidArgument'] | null> | null; // [InvalidArgument]
   }
   Mutation: {};
+  NotFoundError: {};
   Post: { // root type
     content?: string | null; // String
     createdAt?: NexusGenScalars['DateTime'] | null; // DateTime
@@ -85,13 +89,13 @@ export interface NexusGenObjects {
 }
 
 export interface NexusGenInterfaces {
-  Error: NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['UserAuthenticationError'];
+  Error: NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['NotFoundError'] | NexusGenRootTypes['UserAuthenticationError'];
   User: NexusGenRootTypes['ActiveUser'] | NexusGenRootTypes['BannedUser'] | NexusGenRootTypes['DeletedUser'];
 }
 
 export interface NexusGenUnions {
   PostResult: NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['Post'] | NexusGenRootTypes['UserAuthenticationError'];
-  UserResult: NexusGenRootTypes['ActiveUser'] | NexusGenRootTypes['BannedUser'] | NexusGenRootTypes['DeletedUser'] | NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['UserAuthenticationError'];
+  UserResult: NexusGenRootTypes['ActiveUser'] | NexusGenRootTypes['BannedUser'] | NexusGenRootTypes['DeletedUser'] | NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['NotFoundError'] | NexusGenRootTypes['UserAuthenticationError'];
 }
 
 export type NexusGenRootTypes = NexusGenInterfaces & NexusGenObjects & NexusGenUnions
@@ -131,6 +135,10 @@ export interface NexusGenFieldTypes {
     changeUserStatus: NexusGenRootTypes['UserResult'] | null; // UserResult
     createPost: NexusGenRootTypes['PostResult'] | null; // PostResult
     createUser: NexusGenRootTypes['UserResult'] | null; // UserResult
+  }
+  NotFoundError: { // field return type
+    code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
+    message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
   }
   Post: { // field return type
     author: NexusGenRootTypes['User'] | null; // User
@@ -194,6 +202,10 @@ export interface NexusGenFieldTypeNames {
     createPost: 'PostResult'
     createUser: 'UserResult'
   }
+  NotFoundError: { // field return type name
+    code: 'ErrorCode'
+    message: 'ErrorMessage'
+  }
   Post: { // field return type name
     author: 'User'
     content: 'String'
@@ -247,8 +259,8 @@ export interface NexusGenArgTypes {
 
 export interface NexusGenAbstractTypeMembers {
   PostResult: "InvalidArgumentsError" | "Post" | "UserAuthenticationError"
-  UserResult: "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "UserAuthenticationError"
-  Error: "InvalidArgumentsError" | "UserAuthenticationError"
+  UserResult: "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "NotFoundError" | "UserAuthenticationError"
+  Error: "InvalidArgumentsError" | "NotFoundError" | "UserAuthenticationError"
   User: "ActiveUser" | "BannedUser" | "DeletedUser"
 }
 
@@ -257,6 +269,7 @@ export interface NexusGenTypeInterfaces {
   BannedUser: "User"
   DeletedUser: "User"
   InvalidArgumentsError: "Error"
+  NotFoundError: "Error"
   UserAuthenticationError: "Error"
 }
 
@@ -272,7 +285,7 @@ export type NexusGenScalarNames = keyof NexusGenScalars;
 
 export type NexusGenUnionNames = keyof NexusGenUnions;
 
-export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "Post" | "UserAuthenticationError";
+export type NexusGenObjectsUsingAbstractStrategyIsTypeOf = "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "NotFoundError" | "Post" | "UserAuthenticationError";
 
 export type NexusGenAbstractsUsingStrategyResolveType = never;
 
@@ -285,7 +298,7 @@ export type NexusGenFeaturesConfig = {
 }
 
 export interface NexusGenTypes {
-  context: any;
+  context: Context;
   inputTypes: NexusGenInputs;
   rootTypes: NexusGenRootTypes;
   inputTypeShapes: NexusGenInputs & NexusGenEnums & NexusGenScalars;
@@ -320,13 +333,13 @@ declare global {
      * or "Promise<undefined>" means the field can be accessed.
      * Returning "UserAuthenticationError" will prevent the resolver from executing.
      */
-    authorization?: (ctx: any) => Promise<NexusGenFieldTypes['UserAuthenticationError'] | undefined> | NexusGenFieldTypes['UserAuthenticationError'] | undefined
+    authorization?: FieldAuthorizationResolver<TypeName, FieldName>
     /**
      * Validation for an individual field. Returning "undefined"
      * or "Promise<undefined>" means the field can be accessed.
      * Returning InvalidArgumentsError or "Promise<InvalidArgumentsError>" will prevent the resolver from executing.
      */
-    validation?: (args: any) => NexusGenFieldTypes['InvalidArgumentsError'] | undefined
+    validation?: FieldValidationResolver<TypeName, FieldName>
   }
   interface NexusGenPluginInputFieldConfig<TypeName extends string, FieldName extends string> {
   }
