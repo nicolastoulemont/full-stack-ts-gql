@@ -16,27 +16,30 @@ export type Scalars = {
   DateTime: any;
 };
 
-export type ActiveUser = User & {
+export type ActiveUser = Node & User & {
   __typename: 'ActiveUser';
   email?: Maybe<Scalars['String']>;
+  /** GUID for a resource */
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   posts?: Maybe<Array<Maybe<Post>>>;
   status?: Maybe<UserStatus>;
 };
 
-export type BannedUser = User & {
+export type BannedUser = Node & User & {
   __typename: 'BannedUser';
   banReason?: Maybe<Scalars['String']>;
+  /** GUID for a resource */
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   status?: Maybe<UserStatus>;
 };
 
 
-export type DeletedUser = User & {
+export type DeletedUser = Node & User & {
   __typename: 'DeletedUser';
   deletedAt?: Maybe<Scalars['DateTime']>;
+  /** GUID for a resource */
   id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   status?: Maybe<UserStatus>;
@@ -100,17 +103,23 @@ export type MutationCreateUserArgs = {
   name: Scalars['String'];
 };
 
+export type Node = {
+  /** GUID for a resource */
+  id?: Maybe<Scalars['Int']>;
+};
+
 export type NotFoundError = Error & {
   __typename: 'NotFoundError';
   code?: Maybe<ErrorCode>;
   message?: Maybe<ErrorMessage>;
 };
 
-export type Post = {
+export type Post = Node & {
   __typename: 'Post';
   author?: Maybe<User>;
   content?: Maybe<Scalars['String']>;
   createdAt?: Maybe<Scalars['DateTime']>;
+  /** GUID for a resource */
   id?: Maybe<Scalars['Int']>;
   published?: Maybe<Scalars['Boolean']>;
   title?: Maybe<Scalars['String']>;
@@ -132,7 +141,6 @@ export type QueryUserByIdArgs = {
 };
 
 export type User = {
-  id?: Maybe<Scalars['Int']>;
   name?: Maybe<Scalars['String']>;
   status?: Maybe<UserStatus>;
 };

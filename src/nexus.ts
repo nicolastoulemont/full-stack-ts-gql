@@ -90,6 +90,7 @@ export interface NexusGenObjects {
 
 export interface NexusGenInterfaces {
   Error: NexusGenRootTypes['InvalidArgumentsError'] | NexusGenRootTypes['NotFoundError'] | NexusGenRootTypes['UserAuthenticationError'];
+  Node: NexusGenRootTypes['ActiveUser'] | NexusGenRootTypes['BannedUser'] | NexusGenRootTypes['DeletedUser'] | NexusGenRootTypes['Post'];
   User: NexusGenRootTypes['ActiveUser'] | NexusGenRootTypes['BannedUser'] | NexusGenRootTypes['DeletedUser'];
 }
 
@@ -161,8 +162,10 @@ export interface NexusGenFieldTypes {
     code: NexusGenEnums['ErrorCode'] | null; // ErrorCode
     message: NexusGenEnums['ErrorMessage'] | null; // ErrorMessage
   }
-  User: { // field return type
+  Node: { // field return type
     id: number | null; // Int
+  }
+  User: { // field return type
     name: string | null; // String
     status: NexusGenEnums['UserStatus'] | null; // UserStatus
   }
@@ -227,8 +230,10 @@ export interface NexusGenFieldTypeNames {
     code: 'ErrorCode'
     message: 'ErrorMessage'
   }
-  User: { // field return type name
+  Node: { // field return type name
     id: 'Int'
+  }
+  User: { // field return type name
     name: 'String'
     status: 'UserStatus'
   }
@@ -261,15 +266,17 @@ export interface NexusGenAbstractTypeMembers {
   PostResult: "InvalidArgumentsError" | "Post" | "UserAuthenticationError"
   UserResult: "ActiveUser" | "BannedUser" | "DeletedUser" | "InvalidArgumentsError" | "NotFoundError" | "UserAuthenticationError"
   Error: "InvalidArgumentsError" | "NotFoundError" | "UserAuthenticationError"
+  Node: "ActiveUser" | "BannedUser" | "DeletedUser" | "Post"
   User: "ActiveUser" | "BannedUser" | "DeletedUser"
 }
 
 export interface NexusGenTypeInterfaces {
-  ActiveUser: "User"
-  BannedUser: "User"
-  DeletedUser: "User"
+  ActiveUser: "Node" | "User"
+  BannedUser: "Node" | "User"
+  DeletedUser: "Node" | "User"
   InvalidArgumentsError: "Error"
   NotFoundError: "Error"
+  Post: "Node"
   UserAuthenticationError: "Error"
 }
 

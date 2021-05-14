@@ -6,7 +6,6 @@ import prisma from 'lib/prisma'
 export const User = interfaceType({
 	name: 'User',
 	definition(t) {
-		t.int('id')
 		t.nullable.string('name')
 		t.field('status', { type: 'UserStatus' })
 	}
@@ -16,6 +15,7 @@ export const ActiveUser = objectType({
 	name: 'ActiveUser',
 	isTypeOf: (data) => Boolean((data as any).status === 'ACTIVE'),
 	definition(t) {
+		t.implements('Node')
 		t.implements('User')
 		t.string('email')
 		t.list.field('posts', {
@@ -50,6 +50,7 @@ export const deletedUser = objectType({
 	name: 'DeletedUser',
 	isTypeOf: (data) => Boolean((data as any).status === 'DELETED'),
 	definition(t) {
+		t.implements('Node')
 		t.implements('User')
 		t.field('status', { type: 'UserStatus' })
 		t.date('deletedAt')
@@ -60,6 +61,7 @@ export const bannedUser = objectType({
 	name: 'BannedUser',
 	isTypeOf: (data) => Boolean((data as any).status === 'BANNED'),
 	definition(t) {
+		t.implements('Node')
 		t.implements('User')
 		t.field('status', { type: 'UserStatus' })
 		t.nullable.string('banReason')

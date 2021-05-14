@@ -1,3 +1,4 @@
+export * from './generics'
 export * from './scalars'
 export * from './errors'
 export * from './user'

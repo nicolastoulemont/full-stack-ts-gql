@@ -2,16 +2,20 @@
 ### Do not make changes to this file directly
 
 
-type ActiveUser implements User {
+type ActiveUser implements Node & User {
   email: String
+
+  """GUID for a resource"""
   id: Int
   name: String
   posts: [Post]
   status: UserStatus
 }
 
-type BannedUser implements User {
+type BannedUser implements Node & User {
   banReason: String
+
+  """GUID for a resource"""
   id: Int
   name: String
   status: UserStatus
@@ -22,8 +26,10 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-type DeletedUser implements User {
+type DeletedUser implements Node & User {
   deletedAt: DateTime
+
+  """GUID for a resource"""
   id: Int
   name: String
   status: UserStatus
@@ -65,15 +71,22 @@ type Mutation {
   createUser(email: String!, name: String!): UserResult
 }
 
+interface Node {
+  """GUID for a resource"""
+  id: Int
+}
+
 type NotFoundError implements Error {
   code: ErrorCode
   message: ErrorMessage
 }
 
-type Post {
+type Post implements Node {
   author: User
   content: String
   createdAt: DateTime
+
+  """GUID for a resource"""
   id: Int
   published: Boolean
   title: String
@@ -89,7 +102,6 @@ type Query {
 }
 
 interface User {
-  id: Int
   name: String
   status: UserStatus
 }

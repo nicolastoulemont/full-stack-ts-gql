@@ -12,13 +12,50 @@ export function toErrorRecord(errorsArray: ApiErrorArray) {
 
 export type ValidationFn = (key: string, value: string | number) => string | null
 
+export const checkFns = {
+	mail: validateEmail,
+	req: validateReq
+} as const
+
+export const isEmpty = (value: any): boolean =>
+	value === undefined ||
+	value === null ||
+	(typeof value === 'object' && Object.keys(value).length === 0) ||
+	(typeof value === 'string' && value.trim().length === 0)
+
+// Functions to validate user Inputs
+export function validateEmail(key: string, value: string | number): string | null {
+	if (typeof value !== 'string') {
+		return `${value} is not a string`
+	}
+
+	if (value === '') return 'Email is required'
+	/* eslint-disable no-useless-escape */
+	const email_regex = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,5})+$/)
+	/* eslint-enable */
+	if (!email_regex.test(value)) {
+		return `${value} is not a valid email address`
+	} else {
+		return null
+	}
+}
+
+export function validateReq(key: string, value: number | string): string | null {
+	if (isEmpty(value)) {
+		return `${key.charAt(0).toUpperCase() + key.slice(1)} is required`
+	} else {
+		return null
+	}
+}
+
 export interface lookupObj {
 	[key: string]: ValidationFn
 }
 
-export function checkArgs(
-	args: any,
-	keys: Array<string>
+export function checkArgs<T extends Record<string, unknown>>(
+	args: T,
+	// @ts-expect-error
+	keys: Array<`${keyof typeof args}:${keyof typeof checkFns}` | `${keyof typeof args}`>
 ): NexusGenFieldTypes['InvalidArgumentsError'] | undefined {
 	// Gather the required keys and validation need and transform it into a [key]: validationFn lookup
 	// "req" is set as the default validationFn for better DX.
@@ -69,41 +106,5 @@ export function checkArgs(
 		}
 	} else {
 		return undefined
-	}
-}
-
-export const checkFns: { [key: string]: ValidationFn } = {
-	mail: validateEmail,
-	req: validateReq
-}
-
-export const isEmpty = (value: any): boolean =>
-	value === undefined ||
-	value === null ||
-	(typeof value === 'object' && Object.keys(value).length === 0) ||
-	(typeof value === 'string' && value.trim().length === 0)
-
-// Functions to validate user Inputs
-export function validateEmail(key: string, value: string | number): string | null {
-	if (typeof value !== 'string') {
-		return `${value} is not a string`
-	}
-
-	if (value === '') return 'Email is required'
-	/* eslint-disable no-useless-escape */
-	const email_regex = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,5})+$/)
-	/* eslint-enable */
-	if (!email_regex.test(value)) {
-		return `${value} is not a valid email address`
-	} else {
-		return null
-	}
-}
-
-export function validateReq(key: string, value: number | string): string | null {
-	if (isEmpty(value)) {
-		return `${key.charAt(0).toUpperCase() + key.slice(1)} is required`
-	} else {
-		return null
 	}
 }

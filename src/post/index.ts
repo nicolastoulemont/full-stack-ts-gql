@@ -6,7 +6,7 @@ export const Post = objectType({
 	name: 'Post',
 	isTypeOf: (data) => Boolean((data as any).title),
 	definition(t) {
-		t.int('id')
+		t.implements('Node')
 		t.date('createdAt')
 		t.date('updatedAt')
 		t.string('title')
