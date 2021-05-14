@@ -54,8 +54,9 @@ export interface lookupObj {
 
 export function checkArgs<T extends Record<string, unknown>>(
 	args: T,
-	// @ts-expect-error
-	keys: Array<`${keyof typeof args}:${keyof typeof checkFns}` | `${keyof typeof args}`>
+	keys: Array<
+		`${string & keyof typeof args}:${keyof typeof checkFns}` | `${string & keyof typeof args}`
+	>
 ): NexusGenFieldTypes['InvalidArgumentsError'] | undefined {
 	// Gather the required keys and validation need and transform it into a [key]: validationFn lookup
 	// "req" is set as the default validationFn for better DX.
