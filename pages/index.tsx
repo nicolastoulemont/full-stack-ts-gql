@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import React, { useState, useMemo } from 'react'
 import { toErrorRecord } from 'utils'
-import { isType, isTypeInTuple, isEither, isNot } from 'ts-gql-helpers'
+import { isType, isTypeInTuple, isEither, isNot } from 'gql-typeguards'
 import { CheckIcon, CloseIcon, NotAllowedIcon } from '@chakra-ui/icons'
 import { GET_USERS } from 'graphql/user/queries'
 import {

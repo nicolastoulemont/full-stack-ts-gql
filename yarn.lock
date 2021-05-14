@@ -3786,6 +3786,11 @@ got@^9.6.0:
     to-readable-stream "^1.0.0"
     url-parse-lax "^3.0.0"
 
+gql-typeguards@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/gql-typeguards/-/gql-typeguards-1.0.0.tgz#519fece83a45e78a48b7f4603a4e17cf44ff1c5b"
+  integrity sha512-8muNRDYYAys7ZLQSzCioRVH4ThgyH5tzUW2Kd11WWjahXDT1yVkFC5WiNT7eDw8HLnZfBOQEQUEb8ut2JYqfmQ==
+
 graceful-fs@^4.1.2:
   version "4.2.6"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
@@ -6257,11 +6262,6 @@ tree-kill@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.2.tgz#4ca09a9092c88b73a7cdc5e8a01b507b0790a0cc"
   integrity sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==
-
-ts-gql-helpers@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/ts-gql-helpers/-/ts-gql-helpers-0.2.1.tgz#eb9debaf5dcf4ac52ab090c6c829e1824d0f63ea"
-  integrity sha512-fRVeHH9CqnhigHaR56cUT84KF4hZjxVLV/2qfsAaOojyNTQQzSSXLaTWp5O4HFYaS3d51INBS9qbYiin0iRXnQ==
 
 ts-invariant@^0.4.0:
   version "0.4.4"
