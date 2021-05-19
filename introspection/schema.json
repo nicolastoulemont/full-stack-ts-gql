@@ -1,0 +1,660 @@
+{
+  "__schema": {
+    "queryType": {
+      "name": "Query"
+    },
+    "mutationType": {
+      "name": "Mutation"
+    },
+    "subscriptionType": null,
+    "types": [
+      {
+        "kind": "OBJECT",
+        "name": "ActiveUser",
+        "fields": [
+          {
+            "name": "email",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "posts",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "Post",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "status",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Node"
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "User"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "BannedUser",
+        "fields": [
+          {
+            "name": "banReason",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "status",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Node"
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "User"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "DeletedUser",
+        "fields": [
+          {
+            "name": "deletedAt",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "name",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "status",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Node"
+          },
+          {
+            "kind": "INTERFACE",
+            "name": "User"
+          }
+        ]
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "Error",
+        "fields": [
+          {
+            "name": "code",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "message",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [],
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "InvalidArgumentsError"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "NotFoundError"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UserAuthenticationError"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "InvalidArgument",
+        "fields": [
+          {
+            "name": "key",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "message",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "OBJECT",
+        "name": "InvalidArgumentsError",
+        "fields": [
+          {
+            "name": "code",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "invalidArguments",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "InvalidArgument",
+                "ofType": null
+              }
+            },
+            "args": []
+          },
+          {
+            "name": "message",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "Mutation",
+        "fields": [
+          {
+            "name": "changeUserStatus",
+            "type": {
+              "kind": "UNION",
+              "name": "UserResult",
+              "ofType": null
+            },
+            "args": [
+              {
+                "name": "id",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              },
+              {
+                "name": "status",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "createPost",
+            "type": {
+              "kind": "UNION",
+              "name": "PostResult",
+              "ofType": null
+            },
+            "args": [
+              {
+                "name": "authorEmail",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              },
+              {
+                "name": "content",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Any"
+                }
+              },
+              {
+                "name": "title",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "createUser",
+            "type": {
+              "kind": "UNION",
+              "name": "UserResult",
+              "ofType": null
+            },
+            "args": [
+              {
+                "name": "email",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              },
+              {
+                "name": "name",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "Node",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [],
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "ActiveUser"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "BannedUser"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "DeletedUser"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "Post"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "NotFoundError",
+        "fields": [
+          {
+            "name": "code",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "message",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "Post",
+        "fields": [
+          {
+            "name": "author",
+            "type": {
+              "kind": "INTERFACE",
+              "name": "User",
+              "ofType": null
+            },
+            "args": []
+          },
+          {
+            "name": "content",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "createdAt",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "published",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "title",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "updatedAt",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Node"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
+        "name": "PostResult",
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "InvalidArgumentsError"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "Post"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UserAuthenticationError"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "Query",
+        "fields": [
+          {
+            "name": "userById",
+            "type": {
+              "kind": "UNION",
+              "name": "UserResult",
+              "ofType": null
+            },
+            "args": [
+              {
+                "name": "id",
+                "type": {
+                  "kind": "NON_NULL",
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Any"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "name": "users",
+            "type": {
+              "kind": "LIST",
+              "ofType": {
+                "kind": "UNION",
+                "name": "UserResult",
+                "ofType": null
+              }
+            },
+            "args": []
+          }
+        ],
+        "interfaces": []
+      },
+      {
+        "kind": "INTERFACE",
+        "name": "User",
+        "fields": [
+          {
+            "name": "name",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "status",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [],
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "ActiveUser"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "BannedUser"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "DeletedUser"
+          }
+        ]
+      },
+      {
+        "kind": "OBJECT",
+        "name": "UserAuthenticationError",
+        "fields": [
+          {
+            "name": "code",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          },
+          {
+            "name": "message",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Any"
+            },
+            "args": []
+          }
+        ],
+        "interfaces": [
+          {
+            "kind": "INTERFACE",
+            "name": "Error"
+          }
+        ]
+      },
+      {
+        "kind": "UNION",
+        "name": "UserResult",
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "ActiveUser"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "BannedUser"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "DeletedUser"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "InvalidArgumentsError"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "NotFoundError"
+          },
+          {
+            "kind": "OBJECT",
+            "name": "UserAuthenticationError"
+          }
+        ]
+      },
+      {
+        "kind": "SCALAR",
+        "name": "Any"
+      }
+    ],
+    "directives": []
+  }
+}

@@ -5,11 +5,16 @@ documents: "graphql/**/*.ts"
 watch:
   - "graphql/**/*.ts"
 generates:
+  introspection/schema.json:
+    plugins:
+      - urql-introspection
+    config:
+      module: commonjs
   gql-gen/index.tsx:
     plugins:
       - "typescript"
       - "typescript-operations"
-      - "typescript-react-apollo"
+      - "typescript-urql"
     config:
       nonOptionalTypename: true
       withHooks: true

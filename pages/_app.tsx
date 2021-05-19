@@ -1,16 +1,17 @@
-import { ApolloProvider } from '@apollo/client'
-import { useApollo } from 'lib/apollo'
 import { ChakraProvider } from '@chakra-ui/react'
-
+import { Provider } from 'urql'
+import { client, ssrCache } from 'lib/urql'
 function MyApp({ Component, pageProps }) {
-	const client = useApollo()
+	if (pageProps.urqlState) {
+		ssrCache.restoreData(pageProps.urqlState)
+	}
 
 	return (
-		<ApolloProvider client={client}>
+		<Provider value={client}>
 			<ChakraProvider resetCSS={true}>
 				<Component {...pageProps} />
 			</ChakraProvider>
-		</ApolloProvider>
+		</Provider>
 	)
 }
 

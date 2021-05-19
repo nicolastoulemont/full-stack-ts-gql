@@ -1,15 +1,13 @@
 import Head from 'next/head'
 import React, { useState, useMemo } from 'react'
 import { toErrorRecord } from 'utils'
-import { isType, isTypeInTuple, isEither } from 'gql-typeguards'
+import { isType, isTypeInTuple } from 'gql-typeguards'
 import { CheckIcon, CloseIcon, NotAllowedIcon } from '@chakra-ui/icons'
-import { GET_USERS } from 'graphql/user/queries'
 import {
 	useCreateUserMutation,
 	useUsersQuery,
 	useChangeUserStatusMutation,
 	UserStatus,
-	UsersQuery,
 	useCreatePostMutation,
 	ActiveUser
 } from 'gql-gen'
@@ -32,7 +30,7 @@ import {
 } from '@chakra-ui/react'
 
 export default function Home() {
-	const { data, loading } = useUsersQuery()
+	const [{ data, fetching }] = useUsersQuery()
 
 	const deletedUsers = useMemo(
 		() => data?.users?.filter(isTypeInTuple('DeletedUser')) ?? [],
@@ -79,9 +77,9 @@ export default function Home() {
 							<Heading size='md' textAlign='center'>
 								Active
 							</Heading>
-							{loading && <Spinner />}
-							{activeUsers?.map((user) => (
-								<UserListItem user={user} key={user.id}>
+							{fetching && <Spinner />}
+							{activeUsers?.map((user, index) => (
+								<UserListItem user={user} key={`${user.id}${index}`}>
 									{user.posts.length > 0 ? (
 										<UnorderedList ml={0}>
 											{user.posts.map((post) => (
@@ -105,7 +103,7 @@ export default function Home() {
 							<Heading size='md' textAlign='center'>
 								Deleted
 							</Heading>
-							{loading && <Spinner />}
+							{fetching && <Spinner />}
 							{deletedUsers?.map((user) => (
 								<UserListItem user={user} key={user.id} />
 							))}
@@ -114,7 +112,7 @@ export default function Home() {
 							<Heading size='md' textAlign='center'>
 								Banned
 							</Heading>
-							{loading && <Spinner />}
+							{fetching && <Spinner />}
 							{bannedUsers?.map((user) => (
 								<UserListItem user={user} key={user.id} />
 							))}
@@ -135,28 +133,11 @@ function UserForm() {
 	const [{ name, email }, setState] = useState(initialUserState)
 	const [errors, setErrors] = useState({})
 
-	const [saveUser] = useCreateUserMutation({
-		variables: {
-			name,
-			email
-		}
-	})
+	const [result, saveUser] = useCreateUserMutation()
 
 	async function handleSubmit(e) {
 		e?.preventDefault()
-		const { data } = await saveUser({
-			update: (cache, { data: { createUser } }) => {
-				const existingUsers = cache.readQuery<UsersQuery>({ query: GET_USERS })
-				if (isType(createUser, 'ActiveUser')) {
-					cache.writeQuery({
-						query: GET_USERS,
-						data: {
-							users: [...existingUsers.users, createUser]
-						}
-					})
-				}
-			}
-		})
+		const { data } = await saveUser({ name, email })
 		if (isType(data?.createUser, 'ActiveUser')) {
 			setState(initialUserState)
 			setErrors({})
@@ -202,44 +183,11 @@ function PostForm({ activeUsers = [] }: { activeUsers: ActiveUsers }) {
 	const [{ title, content, authorEmail }, setState] = useState(initialPostState)
 	const [errors, setErrors] = useState({})
 
-	const [createPost] = useCreatePostMutation({
-		variables: {
-			title,
-			content,
-			authorEmail
-		},
-
-		update: (cache, { data: { createPost } }) => {
-			const existingUsers = cache.readQuery<UsersQuery>({ query: GET_USERS })
-			if (isType(createPost, 'Post')) {
-				const author = existingUsers.users.find(
-					(user) =>
-						isType(user, 'ActiveUser') &&
-						isType(createPost, 'Post') &&
-						user.email === authorEmail
-				) as ActiveUser
-
-				const updatedAuthor = { ...author, posts: [...author.posts, createPost] }
-
-				const otherUsers = existingUsers.users.filter(
-					(user) =>
-						isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
-						user.id !== author.id
-				)
-
-				cache.writeQuery({
-					query: GET_USERS,
-					data: {
-						users: [...otherUsers, updatedAuthor]
-					}
-				})
-			}
-		}
-	})
+	const [result, createPost] = useCreatePostMutation()
 
 	async function handleSubmit(e) {
 		e?.preventDefault()
-		const { data } = await createPost()
+		const { data } = await createPost({ title, content, authorEmail })
 		if (isType(data?.createPost, 'Post')) {
 			setState(initialPostState)
 			setErrors({})
@@ -287,25 +235,7 @@ function PostForm({ activeUsers = [] }: { activeUsers: ActiveUsers }) {
 }
 
 function UserListItem({ user, children }: { user: any; children?: React.ReactNode }) {
-	const [changeUserStatus] = useChangeUserStatusMutation({
-		update: (cache, { data: { changeUserStatus } }) => {
-			const existingUsers = cache.readQuery<UsersQuery>({ query: GET_USERS })
-			const filteredUsers = existingUsers.users.filter(
-				(user) =>
-					isEither(user, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
-					isEither(changeUserStatus, ['ActiveUser', 'BannedUser', 'DeletedUser']) &&
-					user.id !== changeUserStatus.id
-			)
-
-			cache.writeQuery({
-				query: GET_USERS,
-				data: {
-					users: [...filteredUsers, changeUserStatus]
-				}
-			})
-		}
-	})
-
+	const [result, changeUserStatus] = useChangeUserStatusMutation()
 	const icon =
 		user.status === 'ACTIVE'
 			? { name: CheckIcon, color: 'green.500' }
@@ -344,10 +274,8 @@ function UserListItem({ user, children }: { user: any; children?: React.ReactNod
 							colorScheme='orange'
 							onClick={() =>
 								changeUserStatus({
-									variables: {
-										id: user.id,
-										status: 'BANNED' as UserStatus.Deleted
-									}
+									id: user.id,
+									status: 'BANNED' as UserStatus.Deleted
 								})
 							}
 						/>
@@ -359,10 +287,8 @@ function UserListItem({ user, children }: { user: any; children?: React.ReactNod
 							colorScheme='red'
 							onClick={() =>
 								changeUserStatus({
-									variables: {
-										id: user.id,
-										status: 'BANNED' as UserStatus.Banned
-									}
+									id: user.id,
+									status: 'BANNED' as UserStatus.Banned
 								})
 							}
 						/>
@@ -377,10 +303,8 @@ function UserListItem({ user, children }: { user: any; children?: React.ReactNod
 							size='sm'
 							onClick={() =>
 								changeUserStatus({
-									variables: {
-										id: user.id,
-										status: 'ACTIVE' as UserStatus.Active
-									}
+									id: user.id,
+									status: 'ACTIVE' as UserStatus.Active
 								})
 							}
 						/>
@@ -392,10 +316,8 @@ function UserListItem({ user, children }: { user: any; children?: React.ReactNod
 							colorScheme='red'
 							onClick={() =>
 								changeUserStatus({
-									variables: {
-										id: user.id,
-										status: 'BANNED' as UserStatus.Banned
-									}
+									id: user.id,
+									status: 'BANNED' as UserStatus.Banned
 								})
 							}
 						/>
@@ -410,10 +332,8 @@ function UserListItem({ user, children }: { user: any; children?: React.ReactNod
 							colorScheme='orange'
 							onClick={() =>
 								changeUserStatus({
-									variables: {
-										id: user.id,
-										status: 'DELETED' as UserStatus.Deleted
-									}
+									id: user.id,
+									status: 'DELETED' as UserStatus.Deleted
 								})
 							}
 						/>
@@ -425,10 +345,8 @@ function UserListItem({ user, children }: { user: any; children?: React.ReactNod
 							colorScheme='green'
 							onClick={() =>
 								changeUserStatus({
-									variables: {
-										id: user.id,
-										status: 'ACTIVE' as UserStatus.Active
-									}
+									id: user.id,
+									status: 'ACTIVE' as UserStatus.Active
 								})
 							}
 						/>
